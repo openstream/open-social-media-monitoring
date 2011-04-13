@@ -1,0 +1,88 @@
+body{
+ background-color: #d7d7d7;
+ margin: 0px;
+}
+
+.m1{
+ padding-left: 15px;
+ padding-right: 15px;
+}
+
+td, input, textarea, select{
+ font-family: Tahoma, Arial;
+ font-size: 11px;
+ color: #666666;
+}
+
+.m2{
+ color: #2D97D5;
+ font-weight: bold;
+}
+
+.he{
+ font-size: 12px;
+ font-weight: bold;
+}
+
+.he2{
+ background-color: #EBEBE9;
+ border-top: #D7D7D2 solid 1px;
+ border-bottom: #D7D7D2 solid 1px;
+ text-align: center;
+}
+
+a{
+ color: #2D97D5;
+}
+
+.t1{
+ border-left: #D7D7D2 solid 1px;
+ border-right: #D7D7D2 solid 1px;
+}
+
+.rw{
+ background-color: #F8F8F8;
+ border-bottom: #D7D7D2 solid 1px;
+}
+
+.bu{
+ color: #FFFFFF;
+ background-color: #296DAA;
+ font-weight: bold;
+ border-top-color: #5088BA;
+ border-bottom-color: #1F5281;
+ border-left-color: #5088BA;
+ border-right-color: #1F5281;
+ border-style: solid;
+ border-width: 1;
+}
+
+.he3{
+ font-weight: bold;
+ color: #666666;
+ text-align: center;
+}
+
+.tl{
+ text-decoration: none;
+}
+
+.tl:hover{
+ text-decoration: underline;
+}
+
+.in{
+ width: 280px;
+ padding-left: 3px;
+ border: #CCCCCC solid 1px;
+}
+
+.left{
+ float:left;
+}
+.right{
+ float:right;
+}
+.clear{
+ clear:both;
+}
