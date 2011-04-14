@@ -8,7 +8,7 @@
  }
 
  function __autoload($class_name) {
-   require_once('classes/'.$class_name.'.php');
+   require_once(dirname(__file__).'/../classes/'.$class_name.'.php');
  }
 
  function url_param($param = '', $close = 0, $url = ''){
