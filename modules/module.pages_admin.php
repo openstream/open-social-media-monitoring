@@ -103,12 +103,17 @@
        $entity[$obj->search_entity_name] = $obj->search_entity_value;
       }
      }
-     while(is_array($entity['link']) && list($key, $link) = each($entity['link'])){
-      if($link->{'@attributes'}->type == 'image/png'){
-       echo '<img src="'.$link->{'@attributes'}->href.'" alt="" align="left" style="height:48px; width:48px; margin-right:10px; margin-bottom:5px;" />';
+     echo '<div class="results-container'.($entity['source'] == 'facebook' ? ' facebook' : '').'"><div class="left">';
+     if($entity['source'] == 'facebook'){
+      echo '<img src="images/fb.jpg" alt="" />';
+     }else{
+      while(is_array($entity['link']) && list($key, $link) = each($entity['link'])){
+       if($link->{'@attributes'}->type == 'image/png'){
+        echo '<a href="'.$entity['author-uri'].'" target="_blank" title="'.$entity['author-name'].'" onclick="blur();"><img src="'.$link->{'@attributes'}->href.'" alt="'.$entity['author-name'].'" /></a>';
+       }
       }
      }
-     echo $entity['content'].'<br><i>'.date('l, F jS, Y H:i', $entity['published']).'</i><hr style="clear:both;" />';
+     echo '</div><div class="left msg-text"><strong>'.$entity['author-name'].'</strong><div class="date">'.date('F jS, Y H:i', $entity['published']).'</div>'.$entity['content'].'</div><div class="clear"></div></div>';
     }
 
     a_footer();

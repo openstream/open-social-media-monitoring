@@ -2,6 +2,9 @@ body{
  background-color: #d7d7d7;
  margin: 0px;
 }
+a img{
+ border-width:0px;
+}
 
 .m1{
  padding-left: 15px;
@@ -85,4 +88,28 @@ a{
 }
 .clear{
  clear:both;
+}
+
+.results-container{
+ border-bottom:#bbbbbb solid 1px;
+ padding-top:3px;
+ padding-bottom:6px;
+}
+.results-container img{
+ height:48px;
+ width:48px;
+ margin-right:10px;
+ margin-top:3px;
+}
+.results-container .date{
+ color:#bbbbbb;
+ font-size:10px;
+}
+.results-container.facebook{
+ background-color:#2e4576;
+ border-bottom-color:#2e4576;
+ color:#ffffff;
+}
+.results-container .msg-text{
+ width:577px;
 }
