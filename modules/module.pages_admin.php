@@ -82,6 +82,87 @@
    case 3: // ------------------- RESULTS ----------------------------------------------
     a_header('');
 
+    $query = 'SELECT * FROM '.$prefix.'query WHERE query_id = '.(int)$_REQUEST['id'];
+    $res = mysql_query($query);
+    $current_query = mysql_fetch_object($res);
+
+?>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script type="text/javascript" src="js/highcharts.js"></script>
+
+<script type="text/javascript" src="js/modules/exporting.js"></script>
+<script type="text/javascript">
+                
+ var chart;
+ $(document).ready(function() {
+  var options = {
+   chart: { renderTo: 'container' },
+   title: { text: 'Daily Twitter vs. Facebook' },
+   subtitle: { text: 'Keyword: <?php echo $current_query->query_q?> Language: <?php echo $current_query->query_lang; ?>' },
+   xAxis: {
+    type: 'datetime',
+    tickInterval: 7 * 24 * 3600 * 1000, // one week
+    tickWidth: 0,
+    gridLineWidth: 1,
+    labels: { align: 'left', x: 3, y: -3 }
+   },
+   yAxis: [{ // left y axis
+    title: { text: null },
+    labels: { align: 'left', x: 3, y: 16, formatter: function() { return Highcharts.numberFormat(this.value, 0); } },
+    showFirstLabel: false
+   }, { // right y axis
+    linkedTo: 0,
+    gridLineWidth: 0,
+    opposite: true,
+    title: { text: null },
+    labels: { align: 'right', x: -3, y: 16, formatter: function() { return Highcharts.numberFormat(this.value, 0); } },
+    showFirstLabel: false
+   }],
+   legend: { align: 'left', verticalAlign: 'top', y: 20, floating: true, borderWidth: 0 },                                        
+   tooltip: { shared: true, crosshairs: true },
+   plotOptions: { series: { marker: { lineWidth: 1 } } },
+   series: [{name: 'Facebook'}, {name: 'Twitter', lineWidth: 4, marker: {radius: 5}}]
+  }
+
+  var twitter = [], facebook = [];
+
+<?php
+
+ $query = 'SELECT e1.search_entity_value `source`, e2.search_entity_value `date` 
+             FROM '.$prefix.'search s
+       INNER JOIN '.$prefix.'search_entity e1 ON s.search_id = e1.search_id
+       INNER JOIN '.$prefix.'search_entity e2 ON s.search_id = e2.search_id
+            WHERE s.query_id = '.(int)$_REQUEST['id'].'
+              AND e1.search_entity_name = "source"
+              AND e2.search_entity_name = "published"
+         GROUP BY s.search_id';
+ $res = mysql_query($query);
+ $t_cnt = $f_cnt = array();
+ while($obj = mysql_fetch_object($res)){
+  $darr = getdate($obj->date);
+  $date = mktime(0, 0, 0, $darr['mon'], $darr['mday'], $darr['year']);
+  $obj->source == twitter ? $t_cnt[$date]++ : $f_cnt[$date]++;
+  $min_date = isset($min_date) && $min_date < $date ? $min_date : $date;
+  $max_date = isset($max_date) && $max_date > $date ? $max_date : $date;
+ }
+ for($date = $min_date; $date <= $max_date; $date += 86400){
+  echo 'twitter.push(['.($date*1000).', '.(int)$t_cnt[$date].']);';
+  echo 'facebook.push(['.($date*1000).', '.(int)$f_cnt[$date].']);'; 
+ }
+
+?>
+  options.series[0].data = facebook;
+  options.series[1].data = twitter;
+  chart = new Highcharts.Chart(options);
+                                
+ });                                
+</script>
+                
+<div id="container" style="width:650px; height:300px; margin:0 auto"></div>
+
+<?php
+
     $query = 'SELECT s.search_id 
                 FROM '.$prefix.'search s
           INNER JOIN '.$prefix.'search_entity se ON se.search_id = s.search_id
