@@ -1,6 +1,7 @@
 <html>
  <head> 
   <title>Administrator Interface</title> 
+  <base href="<?php echo $directory; ?>" />
   <link rel=stylesheet href=st.css>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
  </head>
@@ -13,9 +14,9 @@
      <table cellspacing=0 cellpadding=0>       
       <tr><td colspan=8 height=22></td></tr>      
       <tr>
-       <td style="padding-bottom:3px;"><a href=<?=url_param();?> class=tl>queries</a></td>
+       <td style="padding-bottom:3px;"><a href=<?php echo Application::getURL('projects') ?> class=tl>queries</a></td>
        <td width=10></td>
-       <td style="padding-bottom:3px;"><a href=<?=url_param().'?a=29';?> class=tl>settings</a></td>
+       <td style="padding-bottom:3px;"><a href=<?php echo Application::getURL('settings') ?> class=tl>settings</a></td>
        <td width=10></td>
       </tr>
      </table>

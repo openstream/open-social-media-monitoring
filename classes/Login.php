@@ -1,0 +1,48 @@
+<?php 
+
+ class Login extends Application{
+ 
+  function __construct($args){
+   // Searching for a method name and calling either it or default method
+   if(is_array($args) && count($args) && method_exists($this, strtolower($args[0]).'Action')){
+	call_user_func_array(array($this, strtolower($args[0]).'Action'), array_slice($args, 1));
+   }else{
+	$this->defaultAction();
+   }
+  }
+  
+  function defaultAction(){
+   global $directory;
+  
+   echo '<html><head><title>Administrator Area</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><base href="'.$directory.'" /><link rel=stylesheet href=st.css></head><body style="background-color:#FFFFFF;"><br><br><br><br><br><br><br><br><center>';
+ open_table('Administrator Logon');
+
+ echo '<table><form method=post action="'.$this->getUrl('login/process').'">
+        <tr><td>Login:</td><td><input name=login type=text></td></tr>
+        <tr><td>Password:</td><td><input name=password type=password></td></tr>
+        <tr><td></td><td><input type=submit value=Login></td></tr>
+       </form></table>
+
+     <script>
+      onload = function(){
+       document.forms[0].login.focus();
+      }
+     </script>
+     <style>
+      td{font-family: Verdana, Tahoma, Arial; font-size: 10px;}
+      input, select{font-size: 10px;}
+      .he{background-image: url(../img/bg01.gif); font-weight: bold; color: #005B90;}
+     </style>
+ ';
+   close_table();
+   echo '</body></html>'; 
+  }
+ 
+  function processAction(){
+   $_SESSION['a_login'] = $_POST['login'];
+   $_SESSION['a_password'] = $_POST['password'];
+   header('Location: '.$this->getUrl());
+  }
+ }
+
+?>

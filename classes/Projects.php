@@ -1,96 +1,103 @@
-<?
+<?php
 
- if($query_mode){
-  $module_name = 'Keyword Management';
-  $module_version = '1.0.0';
-  $module_description = '';
-  $module_author = 'OpenStream';
-  $module_release_date = 'April 12, 2011';
- }else{
+ class Projects extends Application{
 
-  // Normal Mode
+  function __construct($args){
+   // Searching for a method name and calling either it or default method
+   if(is_array($args) && count($args) && method_exists($this, strtolower($args[0]).'Action')){
+	call_user_func_array(array($this, strtolower($args[0]).'Action'), array_slice($args, 1));
+   }else{
+	$this->defaultAction();
+   }
+  }
+  
+  function defaultAction(){
+   global $prefix;
+  
+   a_header('Pages');
 
-  switch($_REQUEST['b']){
-   default:
-    a_header('Pages');
+   echo '<table cellpadding=5 cellspacing=0 width=100% class=t1>
+          <tr><td class=he2><b>Keyword</b></td>
+              <td class=he2 width=150><b>Language</b></td>
+              <td class=he2 width=150><b>Geo Code</b></td>
+              <td align=center class=he2 width=190><b>Action</b></td>
+          </tr>';
+   $query = 'SELECT * FROM '.$prefix.'query';
+   $res = mysql_query($query);
+   while($res && $page = mysql_fetch_object($res))
+    echo '<tr>
+           <td align=center class=rw>'.$page->query_q.'</td>
+           <td class=rw align=center>'.($page->query_lang ? $page->query_lang : '-').'</td>
+           <td class=rw align=center>'.($page->query_geocode ? $page->query_geocode : '-').'</td>
+           <td class=rw align=center>
+            <a href="'.$this->getUrl('projects/results/'.$page->query_id).'">results</a> -
+            <a href="'.$this->getUrl('projects/edit/'.$page->query_id).'">edit</a>
+           </td>
+          </tr>';
+   echo '</table><br /><input type="button" class="bu" value="Add Query" onclick="location.href = \''.$this->getUrl('projects/edit').'\'" />';
 
-    echo '<table cellpadding=5 cellspacing=0 width=100% class=t1>
-           <tr><td class=he2><b>Keyword</b></td>
-               <td class=he2 width=150><b>Language</b></td>
-               <td class=he2 width=150><b>Geo Code</b></td>
-               <td align=center class=he2 width=190><b>Action</b></td>
-           </tr>';
-    $query = 'SELECT * FROM '.$prefix.'query';
-    $res = mysql_query($query);
-    while($res && $page = mysql_fetch_object($res))
-     echo '<tr>
-            <td align=center class=rw>'.$page->query_q.'</td>
-            <td class=rw align=center>'.($page->query_lang ? $page->query_lang : '-').'</td>
-            <td class=rw align=center>'.($page->query_geocode ? $page->query_geocode : '-').'</td>
-            <td class=rw align=center>
-             <a href="'.url_param('a', 1).'b=3&id='.$page->query_id.'">results</a> -
-             <a href="'.url_param('a', 1).'b=1&id='.$page->query_id.'">edit</a>
-            </td>
-           </tr>';
-    echo '</table>';
-
-    a_footer();
-    break;
-
-    case 1: // ----------------------- EDIT QUERY ----------------------------------
+   a_footer();  
+  }
+  
+  function editAction($id = 0){
+   global $prefix;
+   
     a_header('');
 
-    $query = 'SELECT * FROM '.$prefix.'query WHERE query_id = '.$_REQUEST['id'];
-    $res = mysql_query($query);
-    if($res && mysql_num_rows($res))
-     $page = mysql_fetch_object($res);
+    if($id){
+     $query = 'SELECT * FROM '.$prefix.'query WHERE query_id = '.$id;
+     $res = mysql_query($query);
+     if($res && mysql_num_rows($res)){
+      $page = mysql_fetch_object($res);
+	 }
+	}
 
-    echo '<form method=post action="'.url_param('a', 1).'b=2"><input type=hidden name=id value="'.(int)$_REQUEST['id'].'">
+    echo '<form method=post action="'.$this->getUrl('projects/save').'"><input type=hidden name=id value="'.(int)$id.'">
            <table>
             <tr><td>Keyword:</td><td><input type="text" value="'.$page->query_q.'" name="query_q" /></td></tr>
             <tr><td>Language:</td><td><input type="text" value="'.$page->query_lang.'" name="query_lang" /></td></tr>
             <tr><td>Geo Code:</td><td><input type="text" value="'.$page->query_geocode.'" name="query_geocode" /></td></tr>
            </table><br />
-           <div align="center"><input type=submit value="&nbsp; Save &nbsp;" class=bu> <input type=button value="Cancel" class=bu onclick="location.href = \''.url_param('a').'\'"></div>
+           <div align="center"><input type=submit value="&nbsp; Save &nbsp;" class=bu> <input type=button value="Cancel" class=bu onclick="location.href = \''.$this->getUrl('projects').'\'"></div>
           </form>';
           
-    a_footer();
-
-    break;
-
-   case 2: // ----------------------- SAVE QUERY -----------------------------
-
-    $query = 'SELECT * FROM '.$prefix.'query WHERE query_id = '.$_REQUEST['id'];
-    $res = mysql_query($query);
-    if($res && mysql_num_rows($res)){
+    a_footer();  
+  }
+  
+  function saveAction(){
+   global $prefix;
+   
+   $query = 'SELECT * FROM '.$prefix.'query WHERE query_id = '.$_POST['id'];
+   $res = mysql_query($query);
+   if($res && mysql_num_rows($res)){
      $query = 'UPDATE '.$prefix.'query 
-                  SET query_q = "'.$_REQUEST['query_q'].'", 
-                      query_lang = "'.$_REQUEST['query_lang'].'",
-                      query_geocode = "'.$_REQUEST['query_geocode'].'" 
-                WHERE query_id = "'.$_REQUEST['id'].'"';
-    }else{
+                  SET query_q = "'.$_POST['query_q'].'", 
+                      query_lang = "'.$_POST['query_lang'].'",
+                      query_geocode = "'.$_POST['query_geocode'].'" 
+                WHERE query_id = "'.$_POST['id'].'"';
+   }else{
      $query = 'INSERT INTO '.$prefix.'query 
-                  SET query_q = "'.$_REQUEST['query_q'].'", 
-                      query_lang = "'.$_REQUEST['query_lang'].'",
-                      query_geocode = "'.$_REQUEST['query_geocode'].'"';
-    }
-    $res = mysql_query($query);
-    header('Location: '.url_param('a'));
-
-    break;
-
-   case 3: // ------------------- RESULTS ----------------------------------------------
+                  SET query_q = "'.$_POST['query_q'].'", 
+                      query_lang = "'.$_POST['query_lang'].'",
+                      query_geocode = "'.$_POST['query_geocode'].'"';
+   }
+   $res = mysql_query($query);
+   header('Location: '.$this->getUrl('projects'));
+  }
+  
+  function resultsAction($id){
+   global $prefix;
+   
     a_header('');
 
-    $query = 'SELECT * FROM '.$prefix.'query WHERE query_id = '.(int)$_REQUEST['id'];
+    $query = 'SELECT * FROM '.$prefix.'query WHERE query_id = '.(int)$id;
     $res = mysql_query($query);
     $current_query = mysql_fetch_object($res);
 
 ?>
 
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="js/highcharts.js"></script>
-
 <script type="text/javascript" src="js/modules/exporting.js"></script>
 <script type="text/javascript">
                 
@@ -99,7 +106,7 @@
   var options = {
    chart: { renderTo: 'container' },
    title: { text: 'Daily Twitter vs. Facebook' },
-   subtitle: { text: 'Keyword: <?php echo $current_query->query_q?> Language: <?php echo $current_query->query_lang; ?>' },
+   subtitle: { text: 'Keyword: <?php echo $current_query->query_q ?> Language: <?php echo $current_query->query_lang ?>' },
    xAxis: {
     type: 'datetime',
     tickInterval: 7 * 24 * 3600 * 1000, // one week
@@ -133,7 +140,7 @@
              FROM '.$prefix.'search s
        INNER JOIN '.$prefix.'search_entity e1 ON s.search_id = e1.search_id
        INNER JOIN '.$prefix.'search_entity e2 ON s.search_id = e2.search_id
-            WHERE s.query_id = '.(int)$_REQUEST['id'].'
+            WHERE s.query_id = '.(int)$id.'
               AND e1.search_entity_name = "source"
               AND e2.search_entity_name = "published"
          GROUP BY s.search_id';
@@ -166,10 +173,11 @@
     $query = 'SELECT s.search_id 
                 FROM '.$prefix.'search s
           INNER JOIN '.$prefix.'search_entity se ON se.search_id = s.search_id
-               WHERE s.query_id = '.(int)$_REQUEST['id'].'
+               WHERE s.query_id = '.(int)$id.'
                  AND se.search_entity_name = "published"
             ORDER BY se.search_entity_value DESC';
     $res = mysql_query($query);
+
     while($res && $search = mysql_fetch_object($res)){
      $query = 'SELECT * FROM '.$prefix.'search_entity WHERE search_id = '.(int)$search->search_id;
      $re2 = mysql_query($query);
@@ -197,9 +205,9 @@
      echo '</div><div class="left msg-text"><strong>'.$entity['author-name'].'</strong><div class="date">'.date('F jS, Y H:i', $entity['published']).'</div>'.$entity['content'].'</div><div class="clear"></div></div>';
     }
 
-    a_footer();
-    break;
+    a_footer();   
   }
- }
+
+ } 
 
 ?>
