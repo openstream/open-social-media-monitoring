@@ -11,6 +11,59 @@
    }
   }
   
+  function wirexmlAction($id){
+   global $prefix;
+   
+   // Array indexes are 0-based, jCarousel positions are 1-based.
+   $first = max(0, intval($_GET['first']) - 1);
+   $last  = max($first + 1, intval($_GET['last']) - 1);
+   $length = $last - $first + 1;
+
+   $query = 'SELECT s.search_id 
+               FROM '.$prefix.'search s
+         INNER JOIN '.$prefix.'search_entity se ON se.search_id = s.search_id
+              WHERE s.query_id = '.(int)$id.'
+                AND se.search_entity_name = "published"
+           ORDER BY se.search_entity_value DESC';
+   $res = mysql_query($query);
+   $cnt = 0;
+   
+   header('Content-Type: text/xml');
+   echo '<data><total>'.mysql_num_rows($res).'</total>';
+
+   while($res && $search = mysql_fetch_object($res)){
+	if($cnt >= $first && $cnt <= $last){
+     $query = 'SELECT * FROM '.$prefix.'search_entity WHERE search_id = '.(int)$search->search_id;
+     $re2 = mysql_query($query);
+     $entity = array();
+     while($re2 && $obj = mysql_fetch_object($re2)){
+      if($obj->search_entity_name == 'link'){
+       if(!isset($entity['link'])){
+        $entity['link'] = array();
+       }
+       $entity['link'][] = json_decode(stripslashes($obj->search_entity_value));
+      }else{
+       $entity[$obj->search_entity_name] = $obj->search_entity_value;
+      }
+     }
+     echo '<node><source>'.$entity['source'].'</source>';
+     if($entity['source'] == 'facebook'){
+      echo '<image>images/fb.jpg</image>';
+     }else{
+      while(is_array($entity['link']) && list($key, $link) = each($entity['link'])){
+       if($link->{'@attributes'}->type == 'image/png'){
+        echo '<link>'.$entity['author-uri'].'</link><image>'.$link->{'@attributes'}->href.'</image>';
+       }
+      }
+     }
+     echo '<author>'.$entity['author-name'].'</author><date>'.date('F jS, Y H:i', $entity['published']).'</date><content>'.substr(strip_tags($entity['content']), 0, 200).'</content>';
+	 echo '</node>';	 
+    }
+	$cnt++;
+   }
+   echo '</data>';
+  }
+  
   function defaultAction(){
    global $prefix;
   
@@ -99,6 +152,7 @@
 <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="js/highcharts.js"></script>
 <script type="text/javascript" src="js/modules/exporting.js"></script>
+<script type="text/javascript" src="js/jquery.jcarousel.min.js"></script>
 <script type="text/javascript">
                 
  var chart;
@@ -168,42 +222,44 @@
                 
 <div id="container" style="width:650px; height:300px; margin:0 auto"></div>
 
-<?php
+<script type="text/javascript">
 
-    $query = 'SELECT s.search_id 
-                FROM '.$prefix.'search s
-          INNER JOIN '.$prefix.'search_entity se ON se.search_id = s.search_id
-               WHERE s.query_id = '.(int)$id.'
-                 AND se.search_entity_name = "published"
-            ORDER BY se.search_entity_value DESC';
-    $res = mysql_query($query);
-
-    while($res && $search = mysql_fetch_object($res)){
-     $query = 'SELECT * FROM '.$prefix.'search_entity WHERE search_id = '.(int)$search->search_id;
-     $re2 = mysql_query($query);
-     $entity = array();
-     while($re2 && $obj = mysql_fetch_object($re2)){
-      if($obj->search_entity_name == 'link'){
-       if(!isset($entity['link'])){
-        $entity['link'] = array();
-       }
-       $entity['link'][] = json_decode(stripslashes($obj->search_entity_value));
-      }else{
-       $entity[$obj->search_entity_name] = $obj->search_entity_value;
-      }
-     }
-     echo '<div class="results-container'.($entity['source'] == 'facebook' ? ' facebook' : '').'"><div class="left">';
-     if($entity['source'] == 'facebook'){
-      echo '<img src="images/fb.jpg" alt="" />';
-     }else{
-      while(is_array($entity['link']) && list($key, $link) = each($entity['link'])){
-       if($link->{'@attributes'}->type == 'image/png'){
-        echo '<a href="'.$entity['author-uri'].'" target="_blank" title="'.$entity['author-name'].'" onclick="blur();"><img src="'.$link->{'@attributes'}->href.'" alt="'.$entity['author-name'].'" /></a>';
-       }
-      }
-     }
-     echo '</div><div class="left msg-text"><strong>'.$entity['author-name'].'</strong><div class="date">'.date('F jS, Y H:i', $entity['published']).'</div>'.$entity['content'].'</div><div class="clear"></div></div>';
+function mycarousel_itemLoadCallback(carousel, state)
+{
+    // Check if the requested items already exist
+    if (carousel.has(carousel.first, carousel.last)) {
+        return;
     }
+
+    jQuery.get(
+        '<?php echo $this->getUrl('projects/wirexml/'.(int)$id.'/') ?>',
+        {
+            first: carousel.first,
+            last: carousel.last
+        },
+        function(xml) {
+			carousel.size(parseInt(jQuery('total', xml).text()));
+    		jQuery('node', xml).each(function(i) {
+        		carousel.add(carousel.first + i, '<div class="results-container' + ($('source', this).text() == 'facebook' ? ' facebook' : '') + '"><div class="left">' + ($('source', this).text() == 'facebook' ? '<img src="' + $('image', this).text() + '" alt="" />' : '<a href="' + $('link', this).text() + '" target="_blank" title="' + $('author', this).text() + '" onclick="blur();"><img src="' + $('image', this).text() + '" alt="' + $('author', this).text() + '" /></a>') + '</div><div class="left msg-text"><strong>' + $('author', this).text() + '</strong><div class="date">' + $('date', this).text() + '</div>' + $('content', this).text() + '</div><div class="clear"></div></div>');
+		 	});
+        },
+        'xml'
+    );
+};
+
+jQuery(document).ready(function() {
+    jQuery('#mycarousel').jcarousel({
+	    vertical: true,
+		scroll: 10,
+        itemLoadCallback: mycarousel_itemLoadCallback
+    });
+});
+
+</script>
+
+  <div id="mycarousel" class="jcarousel-skin-tango"><ul><!-- The content will be dynamically loaded in here --></ul></div>
+
+<?php
 
     a_footer();   
   }
