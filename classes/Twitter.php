@@ -3,7 +3,7 @@
  class Twitter extends SocialNetwork{
   function __construct($obj) {
    global $prefix;
-   $twitter = file_get_contents('http://search.twitter.com/search.atom?q='.$obj->query_q.'&rpp=100&result_type=recent&since_id='.$this->getLastTwittId().($obj->query_lang ? '&lang='.$obj->query_lang : ''));
+   $twitter = file_get_contents('http://search.twitter.com/search.atom?q='.urlencode($obj->query_q).'&rpp=100&result_type=recent&since_id='.$this->getLastTwittId().($obj->query_lang ? '&lang='.$obj->query_lang : ''));
    $xml = simplexml_load_string($twitter);
    $json = @json_decode(@json_encode($xml),1);
    if(is_array($json['entry']) && isset($json['entry']['id'])){

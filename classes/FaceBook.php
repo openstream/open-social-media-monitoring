@@ -3,7 +3,7 @@
  class Facebook extends SocialNetwork{
   function __construct($obj){
    global $prefix;
-   $facebook = file_get_contents('https://graph.facebook.com/search?q='.$obj->query_q.'&type=post&limit=100&since='.$this->getLastPostDate());
+   $facebook = file_get_contents('https://graph.facebook.com/search?q='.urlencode($obj->query_q).'&type=post&limit=100&since='.$this->getLastPostDate());
    $facebook =  json_decode($facebook);
    while(is_array($facebook->data) && list(,$entry) = each($facebook->data)){
     if($obj->query_lang){
