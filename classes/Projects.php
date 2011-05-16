@@ -197,6 +197,7 @@
             WHERE s.query_id = '.(int)$id.'
               AND e1.search_entity_name = "source"
               AND e2.search_entity_name = "published"
+			  AND e2.search_entity_value > '.mktime(0, 0, 0, date('n') > 1 ? date('n') -1 : 12, date('j'), date('n') > 1 ? date('Y') : date('Y') - 1).'
          GROUP BY s.search_id';
  $res = mysql_query($query);
  $t_cnt = $f_cnt = array();
