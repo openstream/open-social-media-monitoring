@@ -3,6 +3,8 @@
   <title>Administrator Interface</title> 
   <base href="<?php echo $directory; ?>" />
   <link rel=stylesheet href=st.css>
+  <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
+  <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
  </head>
  <body topmargin=0 leftmargin=0 bottommargin=0 rightmargin=0 marginhight=0 marginwidth=0>
@@ -14,9 +16,9 @@
      <table cellspacing=0 cellpadding=0>       
       <tr><td colspan=8 height=22></td></tr>      
       <tr>
-       <td style="padding-bottom:3px;"><a href=<?php echo Application::getURL('projects') ?> class=tl>queries</a></td>
+       <td style="padding-bottom:3px;"><a href="<?php echo Application::getURL('projects') ?>">projects</a></td>
        <td width=10></td>
-       <td style="padding-bottom:3px;"><a href=<?php echo Application::getURL('settings') ?> class=tl>settings</a></td>
+       <td style="padding-bottom:3px;"><a href="<?php echo Application::getURL('settings') ?>">settings</a></td>
        <td width=10></td>
       </tr>
      </table>
@@ -29,4 +31,4 @@
     <table cellspacing=0 cellpadding=0 align=center>
      <tr>
       <td valign=top><img src=images/a08.gif width=44 height=117></td>
-      <td width=650 bgcolor=#ffffff class=m1>
+      <td width=650 bgcolor="#ffffff" class="m1">

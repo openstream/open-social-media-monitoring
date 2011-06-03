@@ -81,16 +81,22 @@ DROP TABLE IF EXISTS '.$_POST['prefix'].'search;
 CREATE TABLE IF NOT EXISTS '.$_POST['prefix'].'search (
   search_id int(10) unsigned NOT NULL AUTO_INCREMENT,
   query_id int(10) unsigned NOT NULL,
+  search_outer_id VARCHAR( 255 ) NOT NULL ,
+  search_source VARCHAR( 255 ) NOT NULL ,
+  search_published INT( 10 ) UNSIGNED NOT NULL ,
+  search_title VARCHAR( 255 ) NOT NULL ,
+  search_content TEXT NOT NULL ,
+  search_author_name VARCHAR( 255 ) NOT NULL ,
+  search_author_uri VARCHAR( 255 ) NOT NULL ,  
   PRIMARY KEY (search_id)
 );
 
-DROP TABLE IF EXISTS '.$_POST['prefix'].'search_entity;
-CREATE TABLE IF NOT EXISTS '.$_POST['prefix'].'search_entity (
-  search_entity_id int(10) unsigned NOT NULL AUTO_INCREMENT,
+DROP TABLE IF EXISTS '.$_POST['prefix'].'search_link;
+CREATE TABLE IF NOT EXISTS '.$_POST['prefix'].'search_link (
+  search_link_id int(10) unsigned NOT NULL AUTO_INCREMENT,
   search_id int(10) unsigned NOT NULL,
-  search_entity_name varchar(255) NOT NULL,
-  search_entity_value text NOT NULL,
-  PRIMARY KEY (search_entity_id)
+  search_link_str text NOT NULL,
+  PRIMARY KEY (search_link_id)
 );
 
 ';
