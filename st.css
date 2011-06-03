@@ -1,76 +1,33 @@
-body{ background-color: #d7d7d7; margin: 0px; }
-a{ text-decoration: none; }
+/*
+ Open Social Media Monitoring
+ http://www.open-social-media-monitoring.net
+
+ Copyright (c) 2011 Openstream Internet Solutions
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License v3 (2007)
+ as published by the Free Software Foundation.
+*/
+
+body{ background-color: #d7d7d7; margin:0px;  font-family:Tahoma, Arial; font-size:11px; color:#666666; }
+a{ text-decoration: none; color: #2D97D5; }
 a:hover{ text-decoration: underline; }
 a img{ border-width:0px; }
-
-.m1{
- padding-left: 15px;
- padding-right: 15px;
- padding-bottom: 15px;
-}
-
-td, input, textarea, select{
- font-family: Tahoma, Arial;
- font-size: 11px;
- color: #666666;
-}
-
-.m2{
- color: #2D97D5;
- font-weight: bold;
-}
-
-.he{
- font-size: 12px;
- font-weight: bold;
-}
-
-.he2{
- background-color: #EBEBE9;
- border-top: #D7D7D2 solid 1px;
- border-bottom: #D7D7D2 solid 1px;
- text-align: center;
-}
-
-a{
- color: #2D97D5;
-}
-
-.t1, .t1t{
- border-left: #D7D7D2 solid 1px;
- border-right: #D7D7D2 solid 1px;
-}
+td, input, textarea, select{ font-family: Tahoma, Arial; font-size: 11px; color: #666666; }
+.m1{ padding-left: 15px; padding-right: 15px; padding-bottom: 15px; }
+.m2{ color: #2D97D5; font-weight: bold; }
+.he{ font-size: 12px; font-weight: bold; }
+.he2{ background-color: #EBEBE9; border-top: #D7D7D2 solid 1px; border-bottom: #D7D7D2 solid 1px; text-align: center; }
+.t1, .t1t{ border-left: #D7D7D2 solid 1px; border-right: #D7D7D2 solid 1px; }
 .t1t{ border-top:#d7d7d2 solid 1px; }
 .t1t td h4{ font-size:14px; font-weight:normal; margin:0px 0px 4px 0px; }
+.rw{ background-color: #F8F8F8; border-bottom: #D7D7D2 solid 1px; }
+.bu{ color: #FFFFFF; background-color: #296DAA; font-weight: bold; border:#5088BA solid 1px; border-bottom-color: #1F5281; border-right-color: #1F5281; }
+.he3{ font-weight: bold; color: #666666; text-align: center; }
+.in{ width: 280px; padding-left: 3px; border: #CCCCCC solid 1px; }
+.footer{ width:766px; height:37px; background-image:url(images/a11.gif); text-align:center; margin:0 auto; margin-bottom:30px; padding-top:6px; }
 
-.rw{
- background-color: #F8F8F8;
- border-bottom: #D7D7D2 solid 1px;
-}
 
-.bu{
- color: #FFFFFF;
- background-color: #296DAA;
- font-weight: bold;
- border-top-color: #5088BA;
- border-bottom-color: #1F5281;
- border-left-color: #5088BA;
- border-right-color: #1F5281;
- border-style: solid;
- border-width: 1;
-}
-
-.he3{
- font-weight: bold;
- color: #666666;
- text-align: center;
-}
-
-.in{
- width: 280px;
- padding-left: 3px;
- border: #CCCCCC solid 1px;
-}
 
 .left{
  float:left;

@@ -4,9 +4,6 @@
    </table>
   </td></tr>
  </table>
- <table cellspacing="0" cellpadding="0" align="center">
-  <tr><td width="766" height="43" background="images/a11.gif"></td></tr>
-  <tr><td height="30"></td></tr>
- </table>
+ <div class="footer">Copyright &copy; <?php echo date('Y') ?> Open Social Media Monitoring</div>
 </body>
 </html>
