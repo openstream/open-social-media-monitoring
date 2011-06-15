@@ -234,7 +234,7 @@
 	 }
 	}
 
-    echo '<form method=post action="'.$this->getUrl('projects/save').'"><input type=hidden name=id value="'.(int)$id.'" />
+    echo '<form method=post action="'.$this->getUrl('projects/save').'"><input type="hidden" name="id" value="'.(int)$id.'" />
            <table>
             <tr><td>Project Name:</td><td><input type="text" value="'.$page->project_name.'" name="project_name" /></td></tr>
            </table><br />
@@ -259,7 +259,7 @@
      $query = 'UPDATE '.$prefix.'project 
                   SET project_name = "'.$_POST['project_name'].'" 
                 WHERE project_id = "'.$_POST['id'].'"';
-   }elseif(isse($_POST['project_id']) && $_POST['project_id']){
+   }else{
      $query = 'INSERT INTO '.$prefix.'project 
                   SET project_name = "'.$_POST['project_name'].'"';
    }
