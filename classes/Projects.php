@@ -34,15 +34,21 @@
   *  @param string
   *  @return void
   */
-  function wirexmlAction($ids){
+  function wirexmlAction($ids, $exclude){
    global $prefix;
-   
+      
    // Array indexes are 0-based, jCarousel positions are 1-based.
    $first = max(0, intval($_GET['first']) - 1);
    $last  = max($first + 1, intval($_GET['last']) - 1);
    $length = $last - $first + 1;
+   
+   if(preg_match('/twitter|facebook/', $exclude)){
+    $exclude_where = ' AND search_source != "'.$exclude.'"';
+   }elseif($exclude){
+    $exclude_where = ' AND query_id NOT IN('.$exclude.')';
+   }
 
-   $query = 'SELECT * FROM '.$prefix.'search WHERE query_id IN ('.urldecode($ids).') ORDER BY search_published DESC';
+   $query = 'SELECT * FROM '.$prefix.'search WHERE query_id IN ('.urldecode($ids).')'.$exclude_where.' ORDER BY search_published DESC';
    $res = mysql_query($query);
    $cnt = 0;
    
@@ -65,8 +71,7 @@
        }
       }
      }
-	 $content = preg_replace('/\&/ism', '&amp;', $search->search_content);
-     echo '<author>'.$search->search_author_name.'</author>'."\n".'<date>'.date('F jS, Y H:i', $search->search_published).'</date>'."\n".'<content>'.substr(strip_tags($content), 0, 200).'</content>'."\n";
+     echo preg_replace('/\&/ism', '&amp;', '<author>'.$search->search_author_name.'</author>'."\n".'<date>'.date('F jS, Y H:i', $search->search_published).'</date>'."\n".'<content>'.substr(strip_tags($search->search_content), 0, 200).'</content>')."\n";
 	 echo '</node>'."\n";	 
     }
 	$cnt++;
@@ -186,8 +191,8 @@
    while($res && $page = mysql_fetch_object($res)){
     $query = 'SELECT q.*, COUNT(s.search_id) cnt, s.search_published
 	            FROM '.$prefix.'project_to_query p2q 
-		  INNER JOIN '.$prefix.'query q ON q.query_id = p2q.query_id
-		  INNER JOIN '.$prefix.'search s ON s.query_id = p2q.query_id
+		   LEFT JOIN '.$prefix.'query q ON q.query_id = p2q.query_id
+		   LEFT JOIN '.$prefix.'search s ON s.query_id = p2q.query_id
 			   WHERE p2q.project_id = "'.$page->project_id.'"
 			GROUP BY p2q.query_id
 			ORDER BY s.search_published ASC';
@@ -201,7 +206,7 @@
 	}
 	$keywords = implode(', ', $keywords);
     echo '<tr>
-           <td class="rw"><h4><a href="'.$this->getUrl('projects/results/project/'.$page->project_id).'">'.$page->project_name.'</a></h4>Weekly mentions: '.round($cnt/floor((time() - $first_date)/(3600*24*7))).' | Daily Mentions: '.round($cnt/floor((time() - $first_date)/(3600*24))).'<br />Keywords: '.$keywords.'</td>
+           <td class="rw"><h4><a href="'.$this->getUrl('projects/results/project/'.$page->project_id).'">'.$page->project_name.'</a></h4>Weekly mentions: '.round($cnt/ceil((time() - $first_date)/(3600*24*7))).' | Daily Mentions: '.round($cnt/ceil((time() - $first_date)/(3600*24))).'<br />Keywords: '.$keywords.'</td>
            <td class="rw" style="padding-right:25px;" align="right">
 		    <a href="'.$this->getUrl('projects/results/project/'.$page->project_id).'">results</a> -
             <a href="'.$this->getUrl('projects/queries/'.$page->project_id).'">keywords</a> -
@@ -287,11 +292,17 @@
       $page = mysql_fetch_object($res);
 	 }
 	}
+	
+	$avail_lang = array('all' => '', 'en' => 'en', 'de' => 'de');
+	$options = '';
+	while(list($key, $val) = each($avail_lang)){
+	 $options .= '<option value="'.$val.'"'.($val == $page->query_lang ? ' selected' : '').'>'.$key.'</option>';
+	}
 
     echo '<form method=post action="'.$this->getUrl('projects/savequery').'"><input type=hidden name=id value="'.(int)$query_id.'" /><input type="hidden" name="project_id" value="'.$project_id.'" />
            <table>
             <tr><td>Keyword:</td><td><input type="text" value="'.$page->query_q.'" name="query_q" /></td></tr>
-            <tr><td>Language:</td><td><input type="text" value="'.$page->query_lang.'" name="query_lang" /></td></tr>
+            <tr><td>Language:</td><td><select name="query_lang">'.$options.'</select></td></tr>
             <!--tr><td>Geo Code:</td><td><input type="text" value="'.$page->query_geocode.'" name="query_geocode" /></td></tr-->
            </table><br />
            <div align="center"><input type=submit value="&nbsp; Save &nbsp;" class=bu> <input type=button value="Cancel" class=bu onclick="location.href = \''.$this->getUrl('projects/queries/'.$project_id).'\'"></div>
@@ -388,7 +399,19 @@
    }],
    legend: { align: 'left', verticalAlign: 'top', y: 20, floating: true, borderWidth: 0 },                                        
    tooltip: { shared: true, crosshairs: true },
-   plotOptions: { series: { marker: { lineWidth: 1 } } }
+   plotOptions: { series: { marker: { lineWidth: 1 }, events: { hide: updateStream, show: updateStream } } }
+  }
+  
+  function updateStream(){
+   exclude_series = new Array;
+   local_cnt = 0;
+   for(i=0; i<chart.series.length; i++){
+    if(!chart.series[i].visible){
+	 exclude_series[local_cnt++] = active_queries[chart.series[i].name];
+	}
+   }
+   
+   theModelCarousel.reset();  
   }
 
 <?php
@@ -429,14 +452,16 @@
 	 for($date = $min_date; $date <= $max_date; $date += 86400){
 	  echo '['.($date*1000).', '.(int)$val[$date].']'.($date == $max_date ? '];' : ',');
 	 }
-	 echo 'options.series['.$series_cnt++.'].name = "'.($type == 'query' ? $key : $query_names[$key]).'";';
+	 $name = $type == 'query' ? $key : $query_names[$key];
+	 echo 'options.series['.$series_cnt++.'].name = "'.$name.'";';
+	 echo 'active_queries["'.$name.'"] = "'.$key.'";';
 	}
 
 ?>
   chart = new Highcharts.Chart(options);
   
 <?php if(!isset($_COOKIE['msg_legend_hide'])) : ?>  
-  jQuery('#container').prepend('<div id="message-container"><table class="popup" cellspacing="0" cellpadding="0"><tr><td id="topleft" class="corner"></td><td class="top"></td><td id="topright" class="corner"></td></tr><tr><td class="left"></td><td class="popup-contents">Click on legend labels<br />to change graph view.<p class="hide-note">Click on this cloud to hide.</p></td><td class="right"><img width="30" height="29" alt="popup tail" src="images/bubble-tail.png"/></td></tr><tr><td class="corner" id="bottomleft"></td><td class="bottom"></td><td id="bottomright" class="corner"></td></tr></tbody></table></div>');
+  jQuery('#container').prepend('<div id="message-container"><table class="popup" cellspacing="0" cellpadding="0"><tr><td id="topleft" class="corner"></td><td class="top"></td><td id="topright" class="corner"></td></tr><tr><td class="bg-left"></td><td class="popup-contents">Click on legend labels<br />to change graph view.<p class="hide-note">Click on this cloud to hide.</p></td><td class="bg-right"><img width="30" height="29" alt="popup tail" src="images/bubble-tail.png"/></td></tr><tr><td class="corner" id="bottomleft"></td><td class="bottom"></td><td id="bottomright" class="corner"></td></tr></tbody></table></div>');
   setTimeout(function () { jQuery('.popup').animate({ opacity:'toggle', left:'-=10px' }, 250, 'swing'); }, 3000);
   jQuery('.popup').live('click', function() {
    jQuery(this).animate({ opacity:'toggle', left:'+=10px' }, 250, 'swing');
@@ -490,15 +515,19 @@
 <script type="text/javascript" src="js/jquery.jcarousel.min.js"></script>
 <script type="text/javascript">
 
-function mycarousel_itemLoadCallback(carousel, state)
-{
+var theModelCarousel = null;
+var active_queries = new Array;
+var exclude_series = new Array;
+
+function mycarousel_itemLoadCallback(carousel, state){
+	theModelCarousel = carousel;
     // Check if the requested items already exist
     if (carousel.has(carousel.first, carousel.last)) {
         return;
     }
-
+	
     jQuery.get(
-        '<?php echo $this->getUrl('projects/wirexml/'.urlencode($type == 'project' ? $this->getQueryIds($id) : (int)$id).'/') ?>',
+        '<?php echo $this->getUrl('projects/wirexml/'.urlencode($type == 'project' ? $this->getQueryIds($id) : (int)$id).'/') ?>' + exclude_series + '/',
         {
             first: carousel.first,
             last: carousel.last
@@ -513,7 +542,7 @@ function mycarousel_itemLoadCallback(carousel, state)
     );
 };
 
-jQuery(document).ready(function() {
+jQuery(document).ready(function(){
     jQuery('#mycarousel').jcarousel({
 	    vertical: true,
 		scroll: 10,

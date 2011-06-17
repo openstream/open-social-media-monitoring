@@ -159,8 +159,8 @@ td, input, textarea, select{ font-family: Tahoma, Arial; font-size: 11px; color:
 .popup td#topleft { background-image: url(images/bubble-1.png); }
 .popup td.top { background-image: url(images/bubble-2.png); }
 .popup td#topright { background-image: url(images/bubble-3.png); }
-.popup td.left { background-image: url(images/bubble-4.png); }
-.popup td.right { background-image: url(images/bubble-5.png); background-repeat:repeat-y; padding-left:1px; }
+.popup td.bg-left { background-image: url(images/bubble-4.png); }
+.popup td.bg-right { background-image: url(images/bubble-5.png); background-repeat:repeat-y; padding-left:1px; }
 .popup td#bottomleft { background-image: url(images/bubble-6.png); }
 .popup td.bottom { background-image: url(images/bubble-7.png); text-align: center;}
 .popup td.bottom img { display: block; margin: 0 auto; }
