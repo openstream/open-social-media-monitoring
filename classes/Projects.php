@@ -27,6 +27,36 @@
 	$this->defaultAction();
    }
   }
+
+  /*
+  *  Prints out the XML of search results for defined queries
+  *
+  *  @param none
+  *  @return void
+  */
+  function getinfluencersAction(){
+   global $prefix;
+   
+   if(isset($_GET['exclude']) && in_array($_GET['exclude'][0], array('twitter', 'facebook'))){
+    $exclude_where = ' AND search_source != "'.$_GET['exclude'][0].'"';
+   }elseif(isset($_GET['exclude']) && $_GET['exclude']){
+    $exclude_where = ' AND query_id NOT IN('.implode(', ', $_GET['exclude']).')';
+   }
+
+   $query = 'SELECT *, COUNT(*) as cnt 
+               FROM '.$prefix.'search      
+              WHERE query_id IN ('.urldecode($_GET['ids']).')'.$exclude_where.
+($_GET['from'] ? ' AND search_published > '.strtotime($_GET['from']) : '').
+($_GET['to'] ? ' AND search_published < '.strtotime($_GET['to']) : '').
+		 ' GROUP BY search_author_name
+		   ORDER BY cnt DESC
+		      LIMIT 0, 5';
+   $res = mysql_query($query);
+   echo '<h3>Top Influencers</h3>';
+   while($res && $influencer = mysql_fetch_object($res)){
+    echo '<div class="left user"><a href="'.$influencer->search_author_uri.'">'.$influencer->search_author_name.'</a></div><div class="right">'.$influencer->cnt.' mention'.($influencer->cnt > 1 ? 's' : '').'</div><div class="clear"></div>';
+   }
+  }
   
   /*
   *  Prints out the XML of search results for defined queries
@@ -34,7 +64,7 @@
   *  @param string
   *  @return void
   */
-  function wirexmlAction($ids, $exclude){
+  function wirexmlAction($ids, $exclude, $from, $to){
    global $prefix;
       
    // Array indexes are 0-based, jCarousel positions are 1-based.
@@ -48,7 +78,19 @@
     $exclude_where = ' AND query_id NOT IN('.$exclude.')';
    }
 
-   $query = 'SELECT * FROM '.$prefix.'search WHERE query_id IN ('.urldecode($ids).')'.$exclude_where.' ORDER BY search_published DESC';
+   if($from){
+	$from_arr = explode('-', $from);
+   }
+   if($to){
+	$to_arr = explode('-', $to);
+   }
+
+   $query = 'SELECT * 
+               FROM '.$prefix.'search      
+              WHERE query_id IN ('.urldecode($ids).')'.$exclude_where.
+     ($from ? ' AND search_published > '.strtotime($from) : '').
+	   ($to ? ' AND search_published < '.strtotime($to) : '').
+		 ' ORDER BY search_published DESC';
    $res = mysql_query($query);
    $cnt = 0;
    
@@ -350,7 +392,7 @@
   *  @param string, int
   *  @return void
   */
-  private function graph($type, $id){
+  private function graph($type, $id, $from, $to){
    global $prefix;
   
    // Fetching project/query information for graph title
@@ -368,6 +410,9 @@
    // Printing out graph JS code
 ?>
 
+<script type="text/javascript" src="js/jquery.date.js"></script>
+<!--[if IE]><script type="text/javascript" src="js/jquery.bgiframe.js"></script><![endif]-->
+<script type="text/javascript" src="js/jquery.datePicker.js"></script>
 <script type="text/javascript" src="js/highcharts.js"></script>
 <script type="text/javascript" src="js/modules/exporting.js"></script>
 <script type="text/javascript">
@@ -411,7 +456,8 @@
 	}
    }
    
-   theModelCarousel.reset();  
+   theModelCarousel.reset();
+   updateTopInfluencers(<?php echo $from ? '"'.$from.'"'.($to ? ', "'.$to.'"' : '') : '' ?>);
   }
 
 <?php
@@ -428,12 +474,21 @@
 	// Declaring empty obkect for each series
 	echo 'options.series = ['.str_repeat('{},', count($results_cnt)).'];';
 
+	if($from){
+	 $from_arr = explode('-', $from);
+	}
+	if($to){
+	 $to_arr = explode('-', $to);
+	}
+
 	// Fetching "published" info for each entire of the query in given date range
  	$query = 'SELECT search_source `source`, search_published `date`, query_id
      	        FROM '.$prefix.'search
        	       WHERE query_id IN ('.$query_ids.')
-			  	 AND search_published > '.mktime(0, 0, 0, date('n') > 1 ? date('n') -1 : 12, date('j'), date('n') > 1 ? date('Y') : date('Y') - 1).'
-         	GROUP BY search_id';
+    '.($from ? ' AND search_published > '.mktime(0, 0, 0, $from_arr[1], $from_arr[0], $from_arr[2]) :  
+		  	   ' AND search_published > '.mktime(0, 0, 0, date('n') > 1 ? date('n') -1 : 12, date('j'), date('n') > 1 ? date('Y') : date('Y') - 1)).
+	    ($to ? ' AND search_published < '.mktime(0, 0, 0, $to_arr[1], $to_arr[0] + 1, $to_arr[2]) : '').
+          ' GROUP BY search_id';
 	$res = mysql_query($query);
  	 
 	// Counting results by day and storing in $results_cnt array
@@ -467,11 +522,33 @@
    jQuery(this).animate({ opacity:'toggle', left:'+=10px' }, 250, 'swing');
    document.cookie = 'msg_legend_hide=1; expires=Thu, 1 Dec <?php echo date('Y') + 1 ?> 20:00:00 UTC; path=/'
   });
-<?php endif; ?>  
-  
- });
+<?php endif; ?>
+
+  // Date picker
+
+  var start_date = '<?php echo $from ? $from : date('d-m-Y', $min_date) ?>';
+  var end_date = '<?php echo $to ? $to : date('d-m-Y', $max_date) ?>';
+  jQuery('.date-pick').datePicker({createButton:false, startDate:'01/01/1996'}).bind('click', function(){
+   mute_listener = 1;
+   jQuery(this).dpSetSelected(jQuery(this).html());
+   mute_listener = 0;
+   jQuery(this).dpDisplay();
+    this.blur();
+    return false;
+   }).bind('dateSelected', function(e, selectedDate, $td){
+    if(!mute_listener){
+	 if(jQuery(this).attr('id') == 'start_date'){
+	  start_date = selectedDate.asString().replace(/\//g, '-');
+	 }else{
+	  end_date = selectedDate.asString().replace(/\//g, '-');
+	 }
+     window.location.replace(window.location.pathname.replace(/(\d{2}-\d{2}-\d{4}\/)+/g, '') + start_date + '/' + end_date + '/');
+	}
+   });
+  });
 
 </script>
+<div id="date-picker-container">Date range: <a href="" class="date-pick" id="start_date"><?php echo $from ? $from : date('d-m-Y', $min_date) ?></a> - <a href="" class="date-pick"><?php echo $to ? $to : date('d-m-Y', $max_date) ?></a></div>
 <div id="container" style="width:650px; height:300px; margin:0 auto"></div>
 <?php
   
@@ -509,7 +586,7 @@
   *  @param string, int
   *  @return void
   */
-  private function wire($type, $id){
+  private function wire($type, $id, $from, $to){
 
 ?>
 <script type="text/javascript" src="js/jquery.jcarousel.min.js"></script>
@@ -527,7 +604,7 @@ function mycarousel_itemLoadCallback(carousel, state){
     }
 	
     jQuery.get(
-        '<?php echo $this->getUrl('projects/wirexml/'.urlencode($type == 'project' ? $this->getQueryIds($id) : (int)$id).'/') ?>' + exclude_series + '/',
+        '<?php echo $this->getUrl('projects/wirexml/'.urlencode($type == 'project' ? $this->getQueryIds($id) : (int)$id).'/') ?>' + exclude_series + '/<?php echo $from.'/'.$to.'/' ?>',
         {
             first: carousel.first,
             last: carousel.last
@@ -552,10 +629,48 @@ jQuery(document).ready(function(){
 
 </script>
 
+  <h3>Raw Stream</h3>
   <div id="mycarousel" class="jcarousel-skin-tango"><ul><!-- The content will be dynamically loaded in here --></ul></div>
 
 <?php
 
+  }
+
+  /*
+  *  Displays top influencers
+  *
+  *  @param none
+  *  @return void
+  */
+  function topInfluencers($type, $id, $from, $to){
+?>
+  
+  <script type="text/javascript">
+  
+   jQuery(document).ready(function(){
+	updateTopInfluencers(<?php echo $from ? '"'.$from.'"'.($to ? ', "'.$to.'"' : '') : '' ?>);
+   });
+   
+   function updateTopInfluencers(from, to){
+    jQuery.get(
+        '<?php echo $this->getUrl('projects/getinfluencers/') ?>' + exclude_series + '/<?php echo $from.'/'.$to.'/' ?>',
+        {
+            ids: "<?php echo urlencode($type == 'project' ? $this->getQueryIds($id) : (int)$id) ?>",
+            exclude: exclude_series,
+			from: from,
+			to: to
+        },
+        function(ret_html) {
+		 jQuery('#top-influencers').html(ret_html);
+        },
+        'html'
+    );
+   }
+
+  </script>
+  
+    <div id="top-influencers"><!-- The content will be dynamically loaded in here --></div>
+<?php
   }
   
   /*
@@ -564,15 +679,16 @@ jQuery(document).ready(function(){
   *  @param string, int
   *  @return void
   */
-  function resultsAction($type, $id){
+  function resultsAction($type, $id, $from = NULL, $to = NULL){
    global $prefix;
    
    a_header('');
    
-   // jQuery lib is declared here as it is required by both graph and wire
+   // jQuery lib is declared here as it is required by graph, top influencers and wire
    echo '<script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>';
-   $this->graph($type, $id);
-   $this->wire($type, $id);
+   $this->graph($type, $id, $from, $to);
+   $this->topInfluencers($type, $id, $from, $to);
+   $this->wire($type, $id, $from, $to);
    a_footer();   
   }
 
