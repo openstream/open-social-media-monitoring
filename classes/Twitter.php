@@ -29,9 +29,9 @@
 					      search_outer_id = "'.$entry['id'].'",
 						  search_source = "twitter",
 						  search_published = '.strtotime($entry['published']).',
-						  search_title = "'.$entry['title'].'",
-						  search_content = "'.$entry['content'].'",
-						  search_author_name = "'.$entry['author']['name'].'",
+						  search_title = "'.addslashes($entry['title']).'",
+						  search_content = "'.addslashes($entry['content']).'",
+						  search_author_name = "'.addslashes($entry['author']['name']).'",
 						  search_author_uri = "'.$entry['author']['uri'].'"';
     mysql_query($query);
 	$search_id = mysql_insert_id();

@@ -30,9 +30,9 @@
 					       search_outer_id = "'.$entry->id.'",
 						   search_source = "facebook",
 						   search_published = '.strtotime($entry->created_time).',
-						   search_title = "'.$entry->name.'",
-						   search_content = "'.$entry->message.'",
-						   search_author_name = "'.$entry->from->name.'"';
+						   search_title = "'.addslashes($entry->name).'",
+						   search_content = "'.addslashes($entry->message).'",
+						   search_author_name = "'.addslashes($entry->from->name).'"';
 	 
      mysql_query($query);
     }

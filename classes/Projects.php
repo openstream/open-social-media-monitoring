@@ -78,20 +78,13 @@
     $exclude_where = ' AND query_id NOT IN('.$exclude.')';
    }
 
-   if($from){
-	$from_arr = explode('-', $from);
-   }
-   if($to){
-	$to_arr = explode('-', $to);
-   }
-
    $query = 'SELECT * 
                FROM '.$prefix.'search      
               WHERE query_id IN ('.urldecode($ids).')'.$exclude_where.
      ($from ? ' AND search_published > '.strtotime($from) : '').
-	   ($to ? ' AND search_published < '.strtotime($to) : '').
+	   ($to ? ' AND search_published < '.(strtotime($to) + 24*3600) : '').
 		 ' ORDER BY search_published DESC';
-   $res = mysql_query($query);
+   $res = mysql_query($query);   
    $cnt = 0;
    
    header('Content-Type: text/xml');
@@ -113,7 +106,7 @@
        }
       }
      }
-     echo preg_replace('/\&/ism', '&amp;', '<author>'.$search->search_author_name.'</author>'."\n".'<date>'.date('F jS, Y H:i', $search->search_published).'</date>'."\n".'<content>'.substr(strip_tags($search->search_content), 0, 200).'</content>')."\n";
+     echo preg_replace('/\&/ism', '&amp;', '<author>'.stripslashes($search->search_author_name).'</author>'."\n".'<date>'.date('F jS, Y H:i', $search->search_published).'</date>'."\n".'<content>'.substr(strip_tags(stripslashes($search->search_content)), 0, 200).'</content>')."\n";
 	 echo '</node>'."\n";	 
     }
 	$cnt++;
