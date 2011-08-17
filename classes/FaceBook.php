@@ -15,7 +15,7 @@
   function __construct($obj){
    global $prefix;
    
-   $facebook = file_get_contents('https://graph.facebook.com/search?q='.urlencode($obj->query_q).'&type=post&limit=100&since='.$this->getLastPostDate());
+   $facebook = file_get_contents('https://graph.facebook.com/search?q='.urlencode($obj->query_q).'&type=post&limit=100&since='.$this->getLastPostDate($obj->query_id));
    $facebook =  json_decode($facebook);
    while(is_array($facebook->data) && list(,$entry) = each($facebook->data)){
     if($obj->query_lang){
@@ -39,10 +39,10 @@
    }
   }
 
-  function getLastPostDate(){
+  function getLastPostDate($query_id){
    global $prefix;
    
-   $query = 'SELECT search_published FROM '.$prefix.'search WHERE search_source = "facebook" ORDER BY search_published DESC LIMIT 0, 1';   
+   $query = 'SELECT search_published FROM '.$prefix.'search WHERE search_source = "facebook" AND query_id = '.$query_id.' ORDER BY search_published DESC LIMIT 0, 1';
    $res = mysql_query($query);
    return $res && mysql_num_rows($res) ? preg_replace('/^.*:/ism', '', mysql_result($res, 0, 0)) : 0;
   }

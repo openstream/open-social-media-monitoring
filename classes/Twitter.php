@@ -15,8 +15,8 @@
   function __construct($obj) {
    global $prefix;
    
-   $twitter = file_get_contents('http://search.twitter.com/search.atom?q='.urlencode($obj->query_q).'&rpp=100&result_type=recent&since_id='.$this->getLastTwittId().($obj->query_lang ? '&lang='.$obj->query_lang : ''));
-   $xml = simplexml_load_string($twitter);
+   $twitter = file_get_contents('http://search.twitter.com/search.atom?q='.urlencode($obj->query_q).'&rpp=100&result_type=recent&since_id='.$this->getLastTwittId($obj->query_id).($obj->query_lang ? '&lang='.$obj->query_lang : ''));
+   $xml = simplexml_load_string(preg_replace('/\r/ism', '', $twitter));
    $json = @json_decode(@json_encode($xml),1);
    if(is_array($json['entry']) && isset($json['entry']['id'])){
     $temp = $json['entry'];
@@ -44,9 +44,10 @@
    }
   } 
 
-  function getLastTwittId(){
+  function getLastTwittId($query_id){
    global $prefix;
-   $query = 'SELECT search_outer_id FROM '.$prefix.'search WHERE search_source = "twitter" ORDER BY search_published DESC LIMIT 0, 1';
+   
+   $query = 'SELECT search_outer_id FROM '.$prefix.'search WHERE search_source = "twitter" AND query_id = '.$query_id.' ORDER BY search_published DESC LIMIT 0, 1';
    $res = mysql_query($query);
    return $res && mysql_num_rows($res) ? preg_replace('/^.*:/ism', '', mysql_result($res, 0, 0)) : 0;
   }
