@@ -102,9 +102,11 @@
       while($re2 && $obj = mysql_fetch_object($re2)){
 	   $link = json_decode(stripslashes($obj->search_link_str));
        if($link->{'@attributes'}->type == 'image/png'){
-        echo '<link>'.$search->search_author_uri.'</link>'."\n".'<image>'.$link->{'@attributes'}->href.'</image>'."\n";
+	    // We are not outputting the link here as there might be more then one image/png @attributes
+        $link_output = '<link>'.$search->search_author_uri.'</link>'."\n".'<image>'.$link->{'@attributes'}->href.'</image>'."\n";
        }
       }
+	  echo $link_output;
      }
      echo preg_replace('/\&/ism', '&amp;', '<author>'.stripslashes($search->search_author_name).'</author>'."\n".'<date>'.date('F jS, Y H:i', $search->search_published).'</date>'."\n".'<content>'.substr(strip_tags(stripslashes($search->search_content)), 0, 200).'</content>')."\n";
 	 echo '</node>'."\n";	 
