@@ -1,0 +1,8 @@
+Installation:
+- Upload all files onto your server. You can upload them into either root, or subdirectory.
+- Open .htaccess and on third line set the path with traling slash.
+- Create a new cron job. You have to schedule cron.php run with an interval you prefer. This script will grab new data from all sources available.
+- Open the script installed with your browser and follow web-based installation.
+
+Configuration:
+- Just add the project, add keywords and with the first cron script run you will see first results. You can run cron.php manually from your browser also to force new stats grab.
