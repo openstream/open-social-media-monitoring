@@ -37,24 +37,46 @@
   function getinfluencersAction(){
    global $prefix;
    
+   $influencers_to_show = 5;
+   $influencer_arr = array();
+   
    if(isset($_GET['exclude']) && in_array($_GET['exclude'][0], array('twitter', 'facebook'))){
     $exclude_where = ' AND search_source != "'.$_GET['exclude'][0].'"';
    }elseif(isset($_GET['exclude']) && $_GET['exclude']){
     $exclude_where = ' AND query_id NOT IN('.implode(', ', $_GET['exclude']).')';
    }
-
+   
    $query = 'SELECT *, COUNT(*) as cnt 
                FROM '.$prefix.'search      
               WHERE query_id IN ('.urldecode($_GET['ids']).')'.$exclude_where.
 ($_GET['from'] ? ' AND search_published > '.strtotime($_GET['from']) : '').
 ($_GET['to'] ? ' AND search_published < '.strtotime($_GET['to']) : '').
-		 ' GROUP BY search_author_name
-		   ORDER BY cnt DESC
-		      LIMIT 0, 5';
+		 ' GROUP BY search_author_name';
    $res = mysql_query($query);
-   echo '<h3>Top Influencers</h3>';
    while($res && $influencer = mysql_fetch_object($res)){
-    echo '<div class="left user"><a href="'.$influencer->search_author_uri.'">'.$influencer->search_author_name.'</a></div><div class="right">'.$influencer->cnt.' mention'.($influencer->cnt > 1 ? 's' : '').'</div><div class="clear"></div>';
+    $influencer_arr[$influencer->search_author_name] = array('name' => $influencer->search_author_name, 'uri' => $influencer->search_author_uri, 'cnt' => $influencer->cnt);
+   }
+   
+   $query = 'SELECT *, SUM(index_count) as cnt
+               FROM '.$prefix.'search_influencers_index
+              WHERE query_id IN ('.urldecode($_GET['ids']).')'.$exclude_where.
+($_GET['from'] ? ' AND search_published > '.strtotime($_GET['from']) : '').
+($_GET['to'] ? ' AND search_published < '.strtotime($_GET['to']) : '').
+		 ' GROUP BY search_author_name';
+   $res = mysql_query($query);
+   while($res && $influencer = mysql_fetch_object($res)){
+    $influencer_arr[$influencer->search_author_name] = array(
+	 'name' => $influencer->search_author_name,
+	 'uri' => $influencer->search_author_uri,
+	 'cnt' => isset($influencer_arr[$influencer->search_author_name]) ? $influencer_arr[$influencer->search_author_name]['cnt'] + $influencer->cnt : $influencer->cnt
+	);
+   }
+   
+   $this->aasort($influencer_arr, 'cnt');
+   
+   echo '<h3>Top Influencers</h3>';
+   while((list($key, $influencer) = each($influencer_arr)) && $influencers_to_show--){
+    echo '<div class="left user"><a href="'.$influencer['uri'].'" target="_blank">'.$influencer['name'].'</a></div><div class="right">'.$influencer['cnt'].' mention'.($influencer['cnt'] > 1 ? 's' : '').'</div><div class="clear"></div>';
    }
   }
   
@@ -471,18 +493,21 @@
 
 	if($from){
 	 $from_arr = explode('-', $from);
+	 $from_time = mktime(0, 0, 0, $from_arr[1], $from_arr[0], $from_arr[2]);
+	}else{
+	 $from_time = mktime(0, 0, 0, date('n') > 1 ? date('n') -1 : 12, date('j'), date('n') > 1 ? date('Y') : date('Y') - 1);
 	}
 	if($to){
 	 $to_arr = explode('-', $to);
+	 $to_time = mktime(0, 0, 0, $to_arr[1], $to_arr[0] + 1, $to_arr[2]);
 	}
 
 	// Fetching "published" info for each entire of the query in given date range
  	$query = 'SELECT search_source `source`, search_published `date`, query_id
      	        FROM '.$prefix.'search
        	       WHERE query_id IN ('.$query_ids.')
-    '.($from ? ' AND search_published > '.mktime(0, 0, 0, $from_arr[1], $from_arr[0], $from_arr[2]) :  
-		  	   ' AND search_published > '.mktime(0, 0, 0, date('n') > 1 ? date('n') -1 : 12, date('j'), date('n') > 1 ? date('Y') : date('Y') - 1)).
-	    ($to ? ' AND search_published < '.mktime(0, 0, 0, $to_arr[1], $to_arr[0] + 1, $to_arr[2]) : '').
+				 AND search_published > '.$from_time.
+	    ($to ? ' AND search_published < '.$to_time : '').
           ' GROUP BY search_id';
 	$res = mysql_query($query);
  	 
@@ -493,6 +518,19 @@
 	 $results_cnt[$type == 'query' ? $obj->source : $obj->query_id][$date]++;
 	 $min_date = isset($min_date) && $min_date < $date ? $min_date : $date;
 	 $max_date = isset($max_date) && $max_date > $date ? $max_date : $date;
+	}
+	
+	$query = 'SELECT * 
+	            FROM '.$prefix.'search_index 
+			   WHERE query_id IN ('.$query_ids.')
+				 AND index_date > '.$from_time.
+	    ($to ? ' AND index_date < '.$to_time : '');
+	$res = mysql_query($query);
+
+	while($obj = mysql_fetch_object($res)){
+	 $results_cnt[$type == 'query' ? $obj->index_source : $obj->query_id][$obj->index_date] += $obj->index_count;
+	 $min_date = isset($min_date) && $min_date < $obj->index_date ? $min_date : $obj->index_date;
+	 $max_date = isset($max_date) && $max_date > $obj->index_date ? $max_date : $obj->index_date;
 	}
 	
 	// Printing out JS code that fill each series data array
@@ -685,6 +723,20 @@ jQuery(document).ready(function(){
    $this->topInfluencers($type, $id, $from, $to);
    $this->wire($type, $id, $from, $to);
    a_footer();   
+  }
+  
+  function aasort (&$array, $key) {
+    $sorter = array();
+    $ret = array();
+    reset($array);
+    foreach($array as $ii => $va) {
+     $sorter[$ii] = $va[$key];
+    }
+    arsort($sorter);
+    foreach($sorter as $ii => $va) {
+     $ret[$ii] = $array[$ii];
+    }
+    $array = $ret;
   }
 
  } 

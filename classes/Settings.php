@@ -23,7 +23,7 @@
   }
    
   function defaultAction(){
-   global $admPassword, $adminEmail, $defaultFrom, $dbHost, $dbUser, $dbUser, $dbPassword, $dbName, $prefix;
+   global $admPassword, $adminEmail, $defaultFrom, $dbHost, $dbUser, $dbUser, $dbPassword, $dbName, $prefix, $keep_history;
    
     a_header('Settings');
     open_table('Server Configuration');
@@ -36,6 +36,7 @@
             <tr><td align=right><b>MySQL Password:</b></td><td style="padding-top:2px;padding-bottom:2px;"><input type=password name=dbPassword value="'.$dbPassword.'" size=30></td></tr>
             <tr><td align=right><b>MySQL Database:</b></td><td style="padding-top:2px;padding-bottom:2px;"><input type=text name=dbName value="'.$dbName.'" size=30></td></tr>
             <tr><td align=right><b>Database Prefix:</b></td><td style="padding-top:2px;padding-bottom:2px;"><input type=text name=prefix value="'.$prefix.'" size=30></td></tr>
+            <tr><td align=right><b>Show timeline for last:</b></td><td style="padding-top:2px;padding-bottom:2px;"><input type="text" name="keep_history" value="'.$keep_history.'" size="3"/> days</td></tr>
             <tr><td></td><td><input type=submit value="Save Settings" class=bu></td></tr>
            </form></table>';
     close_table();
@@ -43,7 +44,7 @@
   }
 
   function saveAction(){
-   if(count($_POST) == 8){
+   if(count($_POST) == 9){
     $fp = fopen('settings.php', 'w+');
     fputs($fp, "<?php\n\n");
     while(list($var, $val) = each($_POST))

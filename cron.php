@@ -23,6 +23,30 @@
   new FaceBook($obj);
  }
  
+ // Archiving expired entries.
+ $query = 'SELECT search_id, query_id, search_source, search_published, search_author_name, search_author_uri FROM '.$prefix.'search WHERE search_published < '.(time() - $keep_history*24*3600);
+ $re0 = mysql_query($query);
+ if($re0 && $num_rows = mysql_num_rows($re0)){
+  echo 'Archiving '.$num_rows.' entries.'."\n";
+  while($a_obj = mysql_fetch_object($re0)){
+   echo '.';
+   $date = mktime(0, 0, 0, date('n', $a_obj->search_published), date('j', $a_obj->search_published), date('Y', $a_obj->search_published));
+   $query = 'INSERT INTO '.$prefix.'search_index (query_id, index_date, index_source, index_count)
+                  VALUES ('.$a_obj->query_id.', '.$date.', "'.$a_obj->search_source.'", 1)
+ ON DUPLICATE KEY UPDATE index_count = index_count+1';
+   mysql_query($query);
+   $query = 'INSERT INTO '.$prefix.'search_influencers_index (query_id, index_date, search_source, search_author_name, search_author_uri, index_count)
+                  VALUES ('.$a_obj->query_id.', '.$date.', "'.$a_obj->search_source.'", "'.$a_obj->search_author_name.'", "'.$a_obj->search_author_uri.'", 1)
+ ON DUPLICATE KEY UPDATE index_count = index_count+1';
+   mysql_query($query);
+   $query = 'DELETE FROM '.$prefix.'search WHERE search_id = '.$a_obj->search_id;
+   mysql_query($query);
+   $query = 'DELETE FROM '.$prefix.'search_link WHERE search_id = '.$a_obj->search_id;
+   mysql_query($query);
+  }
+  echo "\n";
+ }
+
  if(!(int)date('G')){ // If hour == 0, sending email digest
   $m = new MIMEMail($adminEmail, $defaultFrom, 'Daily overview of your projects');
   $email_html = '<html><body>logo here<hr/><br/>Project(s) in this email:<br/><ul>';
