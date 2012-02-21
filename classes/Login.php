@@ -28,10 +28,10 @@
    echo '<html><head><title>Administrator Area</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><base href="'.$directory.'" /><link rel=stylesheet href=st.css></head><body style="background-color:#FFFFFF;"><br><br><br><br><br><br><br><br><center>';
  open_table('Administrator Logon');
 
- echo '<table><form method=post action="'.$this->getUrl('login/process').'">
-        <tr><td>Login:</td><td><input name=login type=text></td></tr>
-        <tr><td>Password:</td><td><input name=password type=password></td></tr>
-        <tr><td></td><td><input type=submit value=Login></td></tr>
+ echo '<table><form method="post" action="'.$this->getUrl('login/process').'">
+        <tr><td>E-Mail:</td><td><input name="email" type="text"></td></tr>
+        <tr><td>Password:</td><td><input name="password" type="password"></td></tr>
+        <tr><td></td><td><input type="submit" value="Login"></td></tr>
        </form></table>
 
      <script>
@@ -50,7 +50,7 @@
   }
  
   function processAction(){
-   $_SESSION['a_login'] = $_POST['login'];
+   $_SESSION['a_email'] = $_POST['email'];
    $_SESSION['a_password'] = $_POST['password'];
    header('Location: '.$this->getUrl());
   }

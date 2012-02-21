@@ -14,7 +14,7 @@
  class Application{
   
   function run(){
-   global $directory, $dbName, $dbHost, $dbUser, $dbPassword, $admPassword;
+   global $directory, $dbName, $dbHost, $dbUser, $dbPassword, $adminEmail, $admPassword;
    
    // If script is running in directory (not in a web-server root), then getting the dirrectory name and stripping it from REQUEST_URI
    $directory = preg_replace('/index.php$/ism', '', $_SERVER['SCRIPT_NAME']);
@@ -35,7 +35,7 @@
    }
    
    // If user is not logged then setting class name to Login
-   if(($_SESSION['a_login'] != 'admin' || $_SESSION['a_password'] != $admPassword) && $class != 'Installer'){
+   if(($_SESSION['a_email'] != $adminEmail || $_SESSION['a_password'] != $admPassword) && $class != 'Installer'){
     $class = 'Login';
    }
 
