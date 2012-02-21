@@ -421,7 +421,7 @@
     $subtitle = 'Keyword: '.$info->query_q.' Language: '.$info->query_lang;
    }else{
     $title = 'Project: '.$info->project_name;
-	$subtitle = 'Daily keyword drilldown';
+//	$subtitle = 'Daily keyword drilldown';
    }
    
    // Printing out graph JS code
@@ -439,7 +439,7 @@
   var options = {
    chart: { renderTo: 'container', marginTop: 57 },
    title: { text: '<?php echo $title ?>' },
-//   subtitle: { text: '<?php echo $subtitle ?>' },
+   subtitle: { text: '<?php echo $subtitle ?>' },
    xAxis: {
     type: 'datetime',
     tickInterval: 7 * 24 * 3600 * 1000, // one week
@@ -546,6 +546,7 @@
 	}
 
 ?>
+  Highcharts.setOptions({global:{useUTC:false}});
   chart = new Highcharts.Chart(options);
   
 <?php if(!isset($_COOKIE['msg_legend_hide'])) : ?>  
