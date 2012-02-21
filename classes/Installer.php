@@ -23,9 +23,9 @@
   }
    
   function defaultAction(){
-   echo '<html><head><title>Administrator Area</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><base href="'.$directory.'" /><link rel=stylesheet href=st.css></head><body style="background-color:#FFFFFF;"><br><br><br><br><br><br><br><br><center>';
-    open_table('Error');
-	echo '<p>Not able to connect to database.</p>';
+   echo '<html><head><title>Administrator Area</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><link rel=stylesheet href=st.css></head><body class="installer"><center>';
+   open_table('Error');
+   echo '<p>Not able to connect to database.</p>';
 	if(file_exists('settings.php') && !is_writable('settings.php')){
 	 echo '<p>Unfortunately settings.php file is not writable, so installer script can not run.</p>';
 	}elseif(!file_exists('settings.php') && !is_writable('.')){
@@ -42,30 +42,25 @@
 	echo '</body></html>';  
   }
   
-  function runAction(){
-   global $directory, $admPassword, $adminEmail, $defaultFrom, $dbHost, $dbUser, $dbUser, $dbPassword, $dbName, $prefix;
-   
-   echo '<html><head><title>Administrator Area</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><base href="'.$directory.'" /><link rel=stylesheet href=st.css></head><body style="background-color:#FFFFFF;"><br><br><br><br><br><br><br><br><center>';
-
-    open_table('Installer');
-    echo '<table width=355 cellpadding=4 cellspacing=2><form method=post action="'.$this->getUrl('installer/save').'">
-            <tr><td align=right><b>Administator Password:</b></td><td style="padding-top:2px;padding-bottom:2px;"><input type=password name=admPassword size=30 value="'.$admPassword.'"></td></tr>
-            <tr><td align=right><b>Administrator E-Mail:</b></td><td style="padding-top:2px;padding-bottom:2px;"><input name=adminEmail size=30 value="'.$adminEmail.'"></td></tr>
-            <tr><td align=right><b>Default From Address:</b></td><td style="padding-top:2px;padding-bottom:2px;"><input name=defaultFrom size=30 value="'.$defaultFrom.'"></td></tr>
-            <tr><td align=right><b>MySQL Server:</b></td><td style="padding-top:2px;padding-bottom:2px;"><input type=text name=dbHost value="'.$dbHost.'" size=30></td></tr>
-            <tr><td align=right><b>MySQL Login:</b></td><td style="padding-top:2px;padding-bottom:2px;"><input type=text name=dbUser value="'.$dbUser.'" size=30></td></tr>
-            <tr><td align=right><b>MySQL Password:</b></td><td style="padding-top:2px;padding-bottom:2px;"><input type=password name=dbPassword value="'.$dbPassword.'" size=30></td></tr>
-            <tr><td align=right><b>MySQL Database:</b></td><td style="padding-top:2px;padding-bottom:2px;"><input type=text name=dbName value="'.$dbName.'" size=30></td></tr>
-            <tr><td align=right><b>Database Prefix:</b></td><td style="padding-top:2px;padding-bottom:2px;"><input type=text name=prefix value="'.$prefix.'" size=30></td></tr>
+  function runAction(){   
+   echo '<html><head><title>Administrator Area</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><base href="../../"/><link rel="stylesheet" href="st.css"></head><body class="installer"><center>';
+   open_table('Installer');
+   echo '<table width=355 cellpadding=4 cellspacing=2><form method=post action="'.$this->getUrl('installer/save').'">
+            <tr><td align=right><b>Administrator E-Mail:</b></td><td style="padding-top:2px;padding-bottom:2px;"><input name=adminEmail size=30 value="'.$_SESSION['adminEmail'].'"></td></tr>
+            <tr><td align=right><b>Administator Password:</b></td><td style="padding-top:2px;padding-bottom:2px;"><input type=password name=admPassword size=30 value="'.$_SESSION['admPassword'].'"></td></tr>
+            <tr><td align=right><b>Default From Address:</b></td><td style="padding-top:2px;padding-bottom:2px;"><input name=defaultFrom size=30 value="'.$_SESSION['defaultFrom'].'"></td></tr>
+            <tr><td align=right><b>MySQL Server:</b></td><td style="padding-top:2px;padding-bottom:2px;"><input type=text name=dbHost value="'.$_SESSION['dbHost'].'" size=30></td></tr>
+            <tr><td align=right><b>MySQL Login:</b></td><td style="padding-top:2px;padding-bottom:2px;"><input type=text name=dbUser value="'.$_SESSION['dbUser'].'" size=30></td></tr>
+            <tr><td align=right><b>MySQL Password:</b></td><td style="padding-top:2px;padding-bottom:2px;"><input type=password name=dbPassword value="'.$_SESSION['dbPassword'].'" size=30></td></tr>
+            <tr><td align=right><b>MySQL Database:</b></td><td style="padding-top:2px;padding-bottom:2px;"><input type=text name=dbName value="'.$_SESSION['dbName'].'" size=30></td></tr>
+            <tr><td align=right><b>Database Prefix:</b></td><td style="padding-top:2px;padding-bottom:2px;"><input type=text name=prefix value="'.$_SESSION['prefix'].'" size=30></td></tr>
             <tr><td></td><td><input type=submit value="Save Settings" class=bu></td></tr>
-           </form></table>';
-    close_table();
-	echo '</body></html>';
+         </form></table>';
+   close_table();
+   echo '</body></html>';
   }
 
-  function saveAction(){
-   global $directory;
-   
+  function saveAction(){   
    if(count($_POST) == 8){
     $rd = @mysql_connect($_POST['dbHost'], $_POST['dbUser'], $_POST['dbPassword']);
     if(@mysql_select_db($_POST['dbName'], $rd)){
@@ -142,17 +137,21 @@ CREATE TABLE IF NOT EXISTS '.$_POST['prefix'].'search_link (
       if (strlen(trim($query)) > 0){
 	   mysql_query($query); 
 	  }
-     } 
+     }
      $fp = fopen('settings.php', 'w+');
      fputs($fp, "<?php\n\n");
-     while(list($var, $val) = each($_POST))
+     while(list($var, $val) = each($_POST)){
       fputs($fp, ' $'.$var." = '".$val."';\n");
+	 }
      fputs($fp, "\n\n?>");
      fclose($fp);
 	 
 	 header('Location: '.$this->getUrl());
     }else{
-     echo '<html><head><title>Administrator Area</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><base href="'.$directory.'" /><link rel=stylesheet href=st.css></head><body style="background-color:#FFFFFF;"><br><br><br><br><br><br><br><br><center>';
+     while(list($var, $val) = each($_POST)){
+      $_SESSION[$var] = $val;
+	 }
+     echo '<html><head><title>Administrator Area</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><base href="../../"/><link rel="stylesheet" href="st.css"></head><body class="installer"><center>';
      open_table('Error');	
 	 echo '<p>Not able to connect to database.</p><div align="center"><input type="button" class="bu" value="Try Again?" onclick="location.href = \''.$this->getUrl('installer/run').'\'" /></div>';
 	 close_table();

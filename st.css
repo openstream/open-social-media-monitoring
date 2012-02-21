@@ -201,3 +201,5 @@ div.dp-popup td.disabled { cursor: default; }
 
 .user{ background:url(images/icon-user.png) no-repeat 0px 1px; padding:0px 0px 2px 15px; }
 h3{ margin-top:20px; margin-bottom:10px; font-weight:normal; font-size:16px; }
+
+.installer{ background-color:#FFFFFF; margin-top:100px; }
