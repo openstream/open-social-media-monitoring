@@ -18,7 +18,7 @@
    
    // If script is running in directory (not in a web-server root), then getting the dirrectory name and stripping it from REQUEST_URI
    $directory = preg_replace('/index.php$/ism', '', $_SERVER['SCRIPT_NAME']);
-   $uri = preg_replace('|'.$directory.'|ism', '', $_SERVER['REQUEST_URI']);
+   $uri = preg_replace('|^'.$directory.'|ism', '', $_SERVER['REQUEST_URI']);
   
    // Parsing request string into array
    $uri = explode('/', trim($uri, '/'));

@@ -25,12 +25,18 @@
   function defaultAction(){
    echo '<html><head><title>Administrator Area</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><base href="'.$directory.'" /><link rel=stylesheet href=st.css></head><body style="background-color:#FFFFFF;"><br><br><br><br><br><br><br><br><center>';
     open_table('Error');
+	echo '<p>Not able to connect to database.</p>';
 	if(file_exists('settings.php') && !is_writable('settings.php')){
-	 echo '<p>Not able to connect to database.</p><p>Unfortunately settings.php file is not writable, so installer script can not run.</p>';
+	 echo '<p>Unfortunately settings.php file is not writable, so installer script can not run.</p>';
 	}elseif(!file_exists('settings.php') && !is_writable('.')){
-	 echo '<p>Not able to connect to database.</p><p>Unfortunately settings.php file does not exist and current directory is not writable, so installer script can not run.</p>';
+	 echo '<p>Unfortunately settings.php file does not exist and current directory is not writable, so installer script can not run.</p>';
+	}elseif(file_exists('.htaccess') && !is_writable('.htaccess')){
+	 echo '<p>Unfortunately .htaccess file is not writable, so installer script can not run.</p>';
+	}elseif(!file_exists('.htaccess') && !is_writable('.')){
+	 echo '<p>Unfortunately .htaccess file does not exist and current directory is not writable, so installer script can not run.</p>';
 	}else{
-	 echo '<p>Not able to connect to database. Do you want to run installer script?</p><div align="center"><input type="button" class="bu" value="Run" onclick="location.href = \''.$this->getUrl('installer/run').'\'" /></div>';
+     file_put_contents('.htaccess', "<IfModule mod_rewrite.c>\nRewriteEngine On\nRewriteBase ".$_SERVER['REQUEST_URI']."\nRewriteCond %{REQUEST_FILENAME} !-f\nRewriteCond %{REQUEST_FILENAME} !-d\nRewriteRule ^(.*)$ index.php [QSA,L]\n</IfModule>");
+	 echo '<p>Do you want to run installer script?</p><div align="center"><input type="button" class="bu" value="Run" onclick="location.href = \''.$this->getUrl('installer/run').'\'" /></div>';
 	}    
     close_table();
 	echo '</body></html>';  
@@ -100,6 +106,26 @@ CREATE TABLE IF NOT EXISTS '.$_POST['prefix'].'search (
   search_author_name VARCHAR( 255 ) NOT NULL ,
   search_author_uri VARCHAR( 255 ) NOT NULL ,  
   PRIMARY KEY (search_id)
+);
+
+DROP TABLE IF EXISTS '.$_POST['prefix'].'search_index;
+CREATE TABLE '.$_POST['prefix'].'search_index (
+  query_id int(10) NOT NULL,
+  index_date int(10) NOT NULL,
+  index_source varchar(255) NOT NULL,
+  index_count int(5) NOT NULL,
+  UNIQUE KEY query_id (query_id,index_date,index_source)
+);
+
+DROP TABLE IF EXISTS '.$_POST['prefix'].'search_influencers_index;
+CREATE TABLE '.$_POST['prefix'].'search_influencers_index (
+  query_id int(10) unsigned NOT NULL,
+  index_date int(10) unsigned NOT NULL,
+  search_source varchar(255) NOT NULL,
+  search_author_name varchar(255) NOT NULL,
+  search_author_uri varchar(255) NOT NULL,
+  index_count int(5) unsigned NOT NULL,
+  UNIQUE KEY query_id (query_id,search_source,search_author_name,index_date)
 );
 
 DROP TABLE IF EXISTS '.$_POST['prefix'].'search_link;
