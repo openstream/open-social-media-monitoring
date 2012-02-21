@@ -54,6 +54,7 @@
             <tr><td align=right><b>MySQL Password:</b></td><td style="padding-top:2px;padding-bottom:2px;"><input type=password name=dbPassword value="'.$_SESSION['dbPassword'].'" size=30></td></tr>
             <tr><td align=right><b>MySQL Database:</b></td><td style="padding-top:2px;padding-bottom:2px;"><input type=text name=dbName value="'.$_SESSION['dbName'].'" size=30></td></tr>
             <tr><td align=right><b>Database Prefix:</b></td><td style="padding-top:2px;padding-bottom:2px;"><input type=text name=prefix value="'.$_SESSION['prefix'].'" size=30></td></tr>
+            <tr><td align=right><b>Show timeline for last:</b></td><td style="padding-top:2px;padding-bottom:2px;"><input type="text" name="keep_history" value="'.($_SESSION['keep_history'] ? $_SESSION['keep_history'] : 3).'" size="3"/> days</td></tr>
             <tr><td></td><td><input type=submit value="Save Settings" class=bu></td></tr>
          </form></table>';
    close_table();
