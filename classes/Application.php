@@ -49,6 +49,11 @@
    return (preg_match('/https/i', $_SERVER['SERVER_PROTOCOL']) ? 'https://' : 'http://').$_SERVER['SERVER_NAME'].$directory.trim($route, '/').($route ? '/' : '');
   }
   
+  public function log($string){
+   if(file_exists('logs/system.log') && is_writable('logs/system.log')){
+    file_put_contents('logs/system.log', $string);
+   }
+  }
  }
 
 ?>
