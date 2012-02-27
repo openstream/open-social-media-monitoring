@@ -62,7 +62,7 @@
   }
 
   function saveAction(){   
-   if(count($_POST) == 8){
+   if(count($_POST) == 9){
     $rd = @mysql_connect($_POST['dbHost'], $_POST['dbUser'], $_POST['dbPassword']);
     if(@mysql_select_db($_POST['dbName'], $rd)){
      $query = '
