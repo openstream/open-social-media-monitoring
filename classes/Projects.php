@@ -358,17 +358,79 @@
 	 $options .= '<option value="'.$val.'"'.($val == $page->query_lang ? ' selected' : '').'>'.$key.'</option>';
 	}
 
+	$radio_distanceunit = '';
+	if( $page->query_distanceunit == 'mi' )
+	{
+		$radio_distanceunit = '<input type="radio" name="query_distanceunit" value="mi" checked>miles
+							   <input type="radio" name="query_distanceunit" value="km" >kilometer';
+	}
+	else
+	{
+		$radio_distanceunit = '<input type="radio" name="query_distanceunit" value="mi" >miles
+							   <input type="radio" name="query_distanceunit" value="km" checked>kilometer';
+	}
+	
     echo '<form method=post action="'.$this->getUrl('projects/savequery').'"><input type=hidden name=id value="'.(int)$query_id.'" /><input type="hidden" name="project_id" value="'.$project_id.'" />
            <table>
             <tr><td>Keyword:</td><td><input type="text" value="'.$page->query_q.'" name="query_q" /></td></tr>
             <tr><td>Language:</td><td><select name="query_lang">'.$options.'</select></td></tr>
             <!--tr><td>Geo Code:</td><td><input type="text" value="'.$page->query_geocode.'" name="query_geocode" /></td></tr-->
+			<tr><td>Near this place:</td><td><input type="text" value="'.$page->query_nearplace.'" name="query_nearplace" /></td></tr>
+			<tr><td>Within this distance:</td><td><input type="text" value="'.$page->query_distance.'" name="query_distance" /></td></tr>
+			<tr><td></td><td>'.$radio_distanceunit.'</td></tr>
            </table><br />
            <div align="center"><input type=submit value="&nbsp; Save &nbsp;" class=bu> <input type=button value="Cancel" class=bu onclick="location.href = \''.$this->getUrl('projects/queries/'.$project_id).'\'"></div>
           </form>';
           
     a_footer();  
   }
+  
+  /*
+  *  Requests Geocode from twitter geo/search API
+  *
+  *  @param string, int, string
+  *  @return string
+  */
+  
+  private function getGeocode( $query_nearplace, $query_distance, $query_distanceunit ) {
+
+		if( empty( $query_nearplace ) )
+			return '';
+  
+		// Twitter geo/search request
+		$twitter = file_get_contents( 'http://api.twitter.com/1/geo/search.json?query='.urlencode($query_nearplace) );
+		$json = @json_decode($twitter, true);
+		
+		// Number of places returned
+		$nrPlaces = count( $json['result']['places'] );
+		$place = 0;
+	
+		// Get the index of the first place with the place_type city
+		for( $i = 0; $i < $nrPlaces; $i++){
+			if( $json['result']['places'][$i]['place_type'] == 'city' ){
+				$place = $i;
+				break;
+			}
+		}
+		
+		// Get the coordinates of the found city
+		$coordinates = $json['result']['places'][$place]['bounding_box']['coordinates'][0];
+		
+		$nrCoords = count( $coordinates );
+		$long = 0.0;
+		$lat  = 0.0;
+		
+		// Calculate the middle of the city area
+		for( $i = 0; $i < $nrCoords; $i++ ){
+			$long += $coordinates[$i][0];
+			$lat  += $coordinates[$i][1];
+		}
+		$long /= $nrCoords;
+		$lat  /= $nrCoords;
+		
+		//return the geocode
+		return $lat.','.$long.','.$query_distance.$query_distanceunit;
+}
   
   /*
   *  Stores query changes
@@ -379,6 +441,8 @@
   function savequeryAction(){
    global $prefix;
    
+   $query_geocode = $this->getGeocode( $_POST['query_nearplace'], $_POST['query_distance'], $_POST['query_distanceunit']);
+      
    $query = 'SELECT * FROM '.$prefix.'query WHERE query_id = '.$_POST['id'];
    $res = mysql_query($query);
    if($res && mysql_num_rows($res)){
@@ -386,14 +450,20 @@
     $query = 'UPDATE '.$prefix.'query 
                  SET query_q = "'.$_POST['query_q'].'", 
                      query_lang = "'.$_POST['query_lang'].'",
-                     query_geocode = "'.$_POST['query_geocode'].'" 
+                     query_geocode = "'.$query_geocode.'",
+					 query_nearplace = "'.$_POST['query_nearplace'].'",
+					 query_distance  = "'.$_POST['query_distance'].'",
+					 query_distanceunit = "'.$_POST['query_distanceunit'].'"
                WHERE query_id = "'.$_POST['id'].'"';
     $res = mysql_query($query);
    }elseif(isset($_POST['project_id']) && (int)$_POST['project_id']){
     $query = 'INSERT INTO '.$prefix.'query 
                  SET query_q = "'.$_POST['query_q'].'", 
                      query_lang = "'.$_POST['query_lang'].'",
-                     query_geocode = "'.$_POST['query_geocode'].'"';
+                     query_geocode = "'.$query_geocode.'",
+					 query_nearplace = "'.$_POST['query_nearplace'].'",
+					 query_distance  = "'.$_POST['query_distance'].'",
+					 query_distanceunit = "'.$_POST['query_distanceunit'].'"';
     $res = mysql_query($query);
 	$query = 'INSERT INTO '.$prefix.'project_to_query 
 	                  SET project_id = '.(int)$_POST['project_id'].',
@@ -402,6 +472,7 @@
    }
    header('Location: '.$this->getUrl('projects/queries/'.$_POST['project_id']));
   }
+    
   
   /*
   *  Printing results page graph

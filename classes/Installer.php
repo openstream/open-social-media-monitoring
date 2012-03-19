@@ -87,6 +87,9 @@ CREATE TABLE IF NOT EXISTS '.$_POST['prefix'].'query (
   query_q varchar(255) NOT NULL,
   query_lang char(2) NOT NULL,
   query_geocode varchar(255) NOT NULL,
+  query_nearplace varchar(255) NOT NULL,
+  query_distance int(10) NOT NULL,
+  query_distanceunit varchar(30) NOT NULL,
   PRIMARY KEY (query_id)
 );
 
