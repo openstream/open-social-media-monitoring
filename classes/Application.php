@@ -13,7 +13,7 @@
 
  class Application{
   
-  function run(){
+  public static function run(){
    global $directory, $dbName, $dbHost, $dbUser, $dbPassword, $adminEmail, $admPassword;
    
    // If script is running in directory (not in a web-server root), then getting the dirrectory name and stripping it from REQUEST_URI
@@ -35,7 +35,7 @@
    }
    
    // If user is not logged then setting class name to Login
-   if(($_SESSION['a_email'] != $adminEmail || $_SESSION['a_password'] != $admPassword) && $class != 'Installer'){
+   if((!isset($_SESSION['a_email']) || $_SESSION['a_email'] != $adminEmail || !isset($_SESSION['a_password']) || $_SESSION['a_password'] != $admPassword) && $class != 'Installer'){
     $class = 'Login';
    }
 
