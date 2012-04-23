@@ -560,7 +560,7 @@
 	}
 	
 	// Declaring empty obkect for each series
-	echo 'options.series = ['.str_repeat('{},', count($results_cnt)).'];';
+	echo 'options.series = ['.str_repeat('{},', count($results_cnt)).'];'."\n";
 
 	if($from){
 	 $from_arr = explode('-', $from);
@@ -609,11 +609,11 @@
 	while(list($key, $val) = each($results_cnt)){
 	 echo 'options.series['.$series_cnt.'].data = [';
 	 for($date = $min_date; $date <= $max_date; $date += 86400){
-	  echo '['.($date*1000).', '.(int)$val[$date].']'.($date == $max_date ? '];' : ',');
+	  echo '['.($date*1000).', '.(int)$val[$date].']'.($date+86400 > $max_date ? '];'."\n" : ',');
 	 }
 	 $name = $type == 'query' ? $key : $query_names[$key];
-	 echo 'options.series['.$series_cnt++.'].name = "'.$name.'";';
-	 echo 'active_queries["'.$name.'"] = "'.$key.'";';
+	 echo 'options.series['.$series_cnt++.'].name = "'.$name.'";'."\n";
+	 echo 'active_queries["'.$name.'"] = "'.$key.'";'."\n";
 	}
 
 ?>
