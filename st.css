@@ -197,7 +197,6 @@ div.dp-popup div.dp-nav-next a { float: right; }
 div.dp-popup a.disabled { cursor: default; color: #aaa; }
 div.dp-popup td { cursor: pointer; }
 div.dp-popup td.disabled { cursor: default; }
-#date-picker-container{ position:relative; top:298px; left:10px; z-index:100; }
 
 .user{ background:url(images/icon-user.png) no-repeat 0px 1px; padding:0px 0px 2px 15px; }
 h3{ margin-top:20px; margin-bottom:10px; font-weight:normal; font-size:16px; }
