@@ -71,6 +71,7 @@ DROP TABLE IF EXISTS '.$_POST['prefix'].'project;
 CREATE TABLE IF NOT EXISTS '.$_POST['prefix'].'project (
   project_id int(10) unsigned NOT NULL AUTO_INCREMENT,
   project_name varchar(255) NOT NULL,
+  project_status TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT  \'1\'
   PRIMARY KEY (project_id)
 );
 

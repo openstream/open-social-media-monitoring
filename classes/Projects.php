@@ -259,13 +259,14 @@
 	 $first_date = !$first_date || $first_date > $keyword->search_published ? $keyword->search_published : $first_date;
 	}
 	$keywords = implode(', ', $keywords);
-    echo '<tr>
+    echo '<tr'.($page->project_status ? '' : ' class="disabled"').'>
            <td class="rw"><h4><a href="'.$this->getUrl('projects/results/project/'.$page->project_id).'">'.$page->project_name.'</a></h4>Weekly mentions: '.round($cnt/ceil((time() - $first_date)/(3600*24*7))).' | Daily Mentions: '.round($cnt/ceil((time() - $first_date)/(3600*24))).'<br />Keywords: '.$keywords.'</td>
            <td class="rw" style="padding-right:25px;" align="right">
 		    <a href="'.$this->getUrl('projects/results/project/'.$page->project_id).'">results</a> -
             <a href="'.$this->getUrl('projects/queries/'.$page->project_id).'">keywords</a> -
-            <a href="'.$this->getUrl('projects/edit/'.$page->project_id).'">edit project</a> -
-            <a href="'.$this->getUrl('projects/delete/'.$page->project_id).'" onclick="return confirm(\'Are you sure? All keyword(s) stored data will be wiped out.\');">delete project</a>
+            <a href="'.$this->getUrl('projects/edit/'.$page->project_id).'">edit</a> -
+            <a href="'.$this->getUrl('projects/status/'.$page->project_id).'">'.($page->project_status ? 'disable' : 'enable').'</a> -
+            <a href="'.$this->getUrl('projects/delete/'.$page->project_id).'" onclick="return confirm(\'Are you sure? All keyword(s) data will be wiped out.\');">delete</a>
            </td>
           </tr>';
    }	  
@@ -323,6 +324,20 @@
                   SET project_name = "'.$_POST['project_name'].'"';
    }
    $res = mysql_query($query);
+   header('Location: '.$this->getUrl('projects'));
+  }
+  
+  /*
+  *  Change project status to opposite
+  *
+  *  @param int
+  *  @return void
+  */
+  function statusAction($project_id){
+   global $prefix;
+   
+   $query = 'UPDATE '.$prefix.'project SET project_status = NOT project_status WHERE project_id = '.$project_id;
+   mysql_query($query);
    header('Location: '.$this->getUrl('projects'));
   }
   

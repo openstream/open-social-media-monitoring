@@ -16,15 +16,21 @@
  $rd = @mysql_connect($dbHost, $dbUser, $dbPassword);
  mysql_select_db($dbName, $rd);
 
- $query = 'SELECT * FROM '.$prefix.'query';
+ $active_queries = array();
+ $query = 'SELECT q.*
+	         FROM '.$prefix.'project_to_query p2q
+	   INNER JOIN '.$prefix.'project p ON p2q.project_id = p.project_id
+	   INNER JOIN '.$prefix.'query q ON q.query_id = p2q.query_id
+	   		WHERE p.project_status = 1';
  $res = mysql_query($query);
  while($res && $obj = mysql_fetch_object($res)){
+  $active_queries[] = $obj->query_id;
   new Twitter($obj);
   new FaceBook($obj);
  }
  
  // Archiving expired entries.
- $query = 'SELECT search_id, query_id, search_source, search_published, search_author_name, search_author_uri FROM '.$prefix.'search WHERE search_published < '.(time() - $keep_history*24*3600);
+ $query = 'SELECT search_id, query_id, search_source, search_published, search_author_name, search_author_uri FROM '.$prefix.'search WHERE query_id IN ('.implode(', ', $active_queries).') AND search_published < '.(time() - $keep_history*24*3600);
  $re0 = mysql_query($query);
  if($re0 && $num_rows = mysql_num_rows($re0)){
   echo 'Archiving '.$num_rows.' entries.'."\n";
