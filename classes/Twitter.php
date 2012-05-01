@@ -41,6 +41,13 @@
                            search_link_str = "'.addslashes(json_encode($link)).'"';
 	 mysql_query($query);
     }
+    $query = 'INSERT INTO '.$prefix.'search_influencers
+    				  SET query_id = '.$obj->query_id.',
+    					  search_author_name = "'.addslashes($entry['author']['name']).'",
+    					  search_author_uri = "'.$entry['author']['uri'].'",
+    					  cnt = 1
+  ON DUPLICATE KEY UPDATE cnt = cnt + 1';
+	mysql_query($query);
    }
   } 
 
@@ -49,7 +56,13 @@
    
    $query = 'SELECT search_outer_id FROM '.$prefix.'search WHERE search_source = "twitter" AND query_id = '.$query_id.' ORDER BY search_published DESC LIMIT 0, 1';
    $res = mysql_query($query);
-   return $res && mysql_num_rows($res) ? preg_replace('/^.*:/ism', '', mysql_result($res, 0, 0)) : 0;
+   $date1 = $res && mysql_num_rows($res) ? mysql_result($res, 0, 0) : 0;
+
+   $query = 'SELECT index_date + 86400 FROM '.$prefix.'search_index WHERE index_source = "twitter" AND query_id = '.$query_id.' ORDER BY index_date DESC LIMIT 0, 1';
+   $res = mysql_query($query);
+   $date2 = $res && mysql_num_rows($res) ? mysql_result($res, 0, 0) : 0;
+
+   return $date1 > $date2 ? $date1 : $date2;
   }
  }
 

@@ -41,15 +41,13 @@
                   VALUES ('.$a_obj->query_id.', '.$date.', "'.$a_obj->search_source.'", 1)
  ON DUPLICATE KEY UPDATE index_count = index_count+1';
    mysql_query($query);
-   $query = 'INSERT INTO '.$prefix.'search_influencers_index (query_id, index_date, search_source, search_author_name, search_author_uri, index_count)
-                  VALUES ('.$a_obj->query_id.', '.$date.', "'.$a_obj->search_source.'", "'.$a_obj->search_author_name.'", "'.$a_obj->search_author_uri.'", 1)
- ON DUPLICATE KEY UPDATE index_count = index_count+1';
-   mysql_query($query);
    $query = 'DELETE FROM '.$prefix.'search WHERE search_id = '.$a_obj->search_id;
    mysql_query($query);
    $query = 'DELETE FROM '.$prefix.'search_link WHERE search_id = '.$a_obj->search_id;
    mysql_query($query);
   }
+  $query = 'OPTIMIZE TABLE '.$prefix.'search, '.$prefix.'search_link';
+  mysql_query($query);
   echo "\n";
  }
 

@@ -31,55 +31,6 @@
   /*
   *  Prints out the XML of search results for defined queries
   *
-  *  @param none
-  *  @return void
-  */
-  function getinfluencersAction(){
-   global $prefix;
-   
-   $influencers_to_show = 5;
-   $influencer_arr = array();
-   
-   $from = strtotime(date('Y-m-d', $_GET['from']));
-   $to = strtotime(date('Y-m-d', $_GET['to']));
-   
-   $query = 'SELECT *, COUNT(*) as cnt 
-               FROM '.$prefix.'search      
-              WHERE query_id IN ('.urldecode($_GET['ids']).')
-			    AND search_published > '.$from.'
-				AND search_published < '.$to.'
-		   GROUP BY search_author_name';
-   $res = mysql_query($query);
-   while($res && $influencer = mysql_fetch_object($res)){
-    $influencer_arr[$influencer->search_author_name] = array('name' => $influencer->search_author_name, 'uri' => $influencer->search_author_uri, 'cnt' => $influencer->cnt);
-   }
-   
-   $query = 'SELECT *, SUM(index_count) as cnt
-               FROM '.$prefix.'search_influencers_index
-              WHERE query_id IN ('.urldecode($_GET['ids']).')
-				AND index_date > '.$from.'
-				AND index_date < '.$to.'
-		   GROUP BY search_author_name';
-   $res = mysql_query($query);
-   while($res && $influencer = mysql_fetch_object($res)){
-    $influencer_arr[$influencer->search_author_name] = array(
-	 'name' => $influencer->search_author_name,
-	 'uri' => $influencer->search_author_uri,
-	 'cnt' => isset($influencer_arr[$influencer->search_author_name]) ? $influencer_arr[$influencer->search_author_name]['cnt'] + $influencer->cnt : $influencer->cnt
-	);
-   }
-   
-   $this->aasort($influencer_arr, 'cnt');
-   
-   echo '<h3>Top Influencers</h3>';
-   while((list($key, $influencer) = each($influencer_arr)) && $influencers_to_show--){
-    echo '<div class="left user"><a href="'.$influencer['uri'].'" target="_blank">'.$influencer['name'].'</a></div><div class="right">'.$influencer['cnt'].' mention'.($influencer['cnt'] > 1 ? 's' : '').'</div><div class="clear"></div>';
-   }
-  }
-  
-  /*
-  *  Prints out the XML of search results for defined queries
-  *
   *  @param string
   *  @return void
   */
@@ -519,11 +470,9 @@
     redraw: function(){
      extrems = this.xAxis[0].getExtremes();
      theModelCarousel.reset();
-     updateTopInfluencers(extrems.min/1000, extrems.max/1000);	
     },
     load: function(){
-     extrems = this.xAxis[0].getExtremes();
-     updateTopInfluencers(extrems.min/1000, extrems.max/1000);
+     extrems = this.xAxis[0].getExtremes();    
     }
    } },
    title: { text: '<?php echo $title ?>' },
@@ -705,30 +654,21 @@ jQuery(document).ready(function(){
   *  @param none
   *  @return void
   */
-  function topInfluencers($type, $id){
-?>
-  
-  <script type="text/javascript">
-  
-   function updateTopInfluencers(from, to){
-    jQuery.get(
-        '<?php echo $this->getUrl('projects/getinfluencers/') ?>',
-        {
-            ids: "<?php echo urlencode($type == 'project' ? $this->getQueryIds($id) : (int)$id) ?>",
-			from: from,
-			to: to
-        },
-        function(ret_html) {
-		 jQuery('#top-influencers').html(ret_html);
-        },
-        'html'
-    );
+  function topInfluencers($type, $id, $influencers_to_show = 5){
+   global $prefix;
+   
+   $query = 'SELECT search_author_name, search_author_uri, cnt
+               FROM '.$prefix.'search_influencers
+              WHERE query_id IN ('.$this->getQueryIds($id).')
+            ORDER BY cnt
+            LIMIT 0, '.$influencers_to_show;
+   $res = mysql_query($query);
+   echo '<h3>Top Influencers</h3>';
+   while($res && $influencer = mysql_fetch_object($res)){
+    echo '<div class="left user"><a href="'.$influencer->search_author_uri.'" target="_blank">'.$influencer->search_author_name.'</a></div>
+          <div class="right">'.$influencer->cnt.' mention'.($influencer->cnt > 1 ? 's' : '').'</div>
+          <div class="clear"></div>';
    }
-
-  </script>
-  
-    <div id="top-influencers"><!-- The content will be dynamically loaded in here --></div>
-<?php
   }
   
   /*
@@ -742,7 +682,7 @@ jQuery(document).ready(function(){
    
    a_header('');
    
-   // jQuery lib is declared here as it is required by graph, top influencers and wire
+   // jQuery lib is declared here as it is required by graph and wire
    echo '<script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>';
    $this->graph($type, $id);
    $this->topInfluencers($type, $id);
