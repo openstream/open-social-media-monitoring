@@ -118,15 +118,13 @@ CREATE TABLE '.$_POST['prefix'].'search_index (
   UNIQUE KEY query_id (query_id,index_date,index_source)
 );
 
-DROP TABLE IF EXISTS '.$_POST['prefix'].'search_influencers_index;
-CREATE TABLE '.$_POST['prefix'].'search_influencers_index (
+DROP TABLE IF EXISTS '.$_POST['prefix'].'search_influencers;
+CREATE TABLE '.$_POST['prefix'].'search_influencers (
   query_id int(10) unsigned NOT NULL,
-  index_date int(10) unsigned NOT NULL,
-  search_source varchar(255) NOT NULL,
   search_author_name varchar(255) NOT NULL,
   search_author_uri varchar(255) NOT NULL,
-  index_count int(5) unsigned NOT NULL,
-  UNIQUE KEY query_id (query_id,search_source,search_author_name,index_date)
+  cnt int(5) unsigned NOT NULL,
+  UNIQUE KEY query_id (query_id,search_author_name)
 );
 
 DROP TABLE IF EXISTS '.$_POST['prefix'].'search_link;
