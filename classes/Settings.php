@@ -11,7 +11,7 @@
  as published by the Free Software Foundation.
  */
 
- class Settings extends Application{
+class Settings extends Application{
 
   function __construct($args){
    // Searching for a method name and calling either it or default method
@@ -23,7 +23,7 @@
   }
    
   function defaultAction(){
-   global $admPassword, $adminEmail, $defaultFrom, $dbHost, $dbUser, $dbUser, $dbPassword, $dbName, $prefix, $keep_history, $alchemy_api_key;
+   global $admPassword, $adminEmail, $defaultFrom, $dbHost, $dbUser, $dbPassword, $dbName, $prefix, $keep_history, $alchemy_api_key;
    
     a_header('Settings');
     open_table('Server Configuration');
@@ -44,17 +44,8 @@
 	a_footer();
   }
 
-  function saveAction(){
-   if(count($_POST) == 10){
-    $fp = fopen('settings.php', 'w+');
-    fputs($fp, "<?php\n\n");
-    while(list($var, $val) = each($_POST))
-     fputs($fp, ' $'.$var." = '".$val."';\n");
-    fputs($fp, "\n\n?>");
-    fclose($fp);
-   }
-   header('Location: '.$this->getUrl('settings'));
-  }
- }
-
-?>
+    function saveAction(){
+        $this->saveSettings();
+        header('Location: '.$this->getUrl('settings'));
+    }
+}

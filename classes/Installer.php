@@ -62,17 +62,16 @@
    echo '</body></html>';
   }
 
-  function saveAction(){   
-   if(count($_POST) == 9){
-    $rd = @mysql_connect($_POST['dbHost'], $_POST['dbUser'], $_POST['dbPassword']);
-    if(@mysql_select_db($_POST['dbName'], $rd)){
-     $query = '
+    function saveAction(){
+        $rd = @mysql_connect($_POST['dbHost'], $_POST['dbUser'], $_POST['dbPassword']);
+        if(@mysql_select_db($_POST['dbName'], $rd)){
+            $query = '
 
 DROP TABLE IF EXISTS '.$_POST['prefix'].'project;
 CREATE TABLE IF NOT EXISTS '.$_POST['prefix'].'project (
   project_id int(10) unsigned NOT NULL AUTO_INCREMENT,
   project_name varchar(255) NOT NULL,
-  project_status TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT  \'1\'
+  project_status TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT \'1\',
   PRIMARY KEY (project_id)
 );
 
@@ -136,34 +135,14 @@ CREATE TABLE IF NOT EXISTS '.$_POST['prefix'].'search_link (
 );
 
 ';
-     $queries = preg_split("/;+(?=([^'|^\\\']*['|\\\'][^'|^\\\']*['|\\\'])*[^'|^\\\']*[^'|^\\\']$)/", $query);	 
-     foreach ($queries as $query){ 
-      if (strlen(trim($query)) > 0){
-	   mysql_query($query); 
-	  }
-     }
-     $fp = fopen('settings.php', 'w+');
-     fputs($fp, "<?php\n\n");
-     while(list($var, $val) = each($_POST)){
-      fputs($fp, ' $'.$var." = '".$val."';\n");
-	 }
-     fputs($fp, "\n\n?>");
-     fclose($fp);
-	 
-	 header('Location: '.$this->getUrl());
-    }else{
-     while(list($var, $val) = each($_POST)){
-      $_SESSION[$var] = $val;
-	 }
-     echo '<html><head><title>Administrator Area</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><base href="../../"/><link rel="stylesheet" href="st.css"></head><body class="installer"><center>';
-     open_table('Error');	
-	 echo '<p>Not able to connect to database.</p><div align="center"><input type="button" class="bu" value="Try Again?" onclick="location.href = \''.$this->getUrl('installer/run').'\'" /></div>';
-	 close_table();
-	 echo '</body></html>';
+            $queries = preg_split("/;+(?=([^'|^\\\']*['|\\\'][^'|^\\\']*['|\\\'])*[^'|^\\\']*[^'|^\\\']$)/", $query);
+            foreach ($queries as $query){
+                if (strlen(trim($query)) > 0){
+                    mysql_query($query);
+                }
+            }
+            $this->saveSettings();
+        }
+        header('Location: '.$this->getUrl());
     }
-   }   
-  }
-  
  }
-
-?>

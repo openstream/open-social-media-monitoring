@@ -11,12 +11,14 @@
  as published by the Free Software Foundation.
  */
 
- class Application{
-  
-  public static function run(){
-   global $directory, $dbName, $dbHost, $dbUser, $dbPassword, $adminEmail, $admPassword;
-   
-   // If script is running in directory (not in a web-server root), then getting the dirrectory name and stripping it from REQUEST_URI
+class Application{
+
+    public $settings_var_names = array('admPassword', 'adminEmail', 'defaultFrom', 'dbHost', 'dbUser', 'dbPassword', 'dbName', 'prefix', 'keep_history', 'alchemy_api_key');
+
+    public static function run(){
+        global $directory, $dbName, $dbHost, $dbUser, $dbPassword, $adminEmail, $admPassword;
+
+   // If script is running in directory (not in a web-server root), then getting the directory name and stripping it from REQUEST_URI
    $directory = preg_replace('/index.php$/ism', '', $_SERVER['SCRIPT_NAME']);
    $uri = preg_replace('|^'.$directory.'|ism', '', $_SERVER['REQUEST_URI']);
   
@@ -39,7 +41,7 @@
     $class = 'Login';
    }
 
-   // At last calling class and sending request argumants  
+   // At last calling class and sending request arguments
    new $class($args);
   }
   
@@ -54,6 +56,15 @@
     file_put_contents('logs/system.log', $string);
    }
   }
- }
-
-?>
+    public function saveSettings(){
+        $fp = fopen('settings.php', 'w+');
+        fputs($fp, "<?php\n\n");
+        while(list($var, $val) = each($_POST)){
+            if(in_array($var, $this->settings_var_names)){
+                fputs($fp, ' $'.$var." = '".$val."';\n");
+            }
+        }
+        fputs($fp, "\n\n?>");
+        fclose($fp);
+    }
+}
