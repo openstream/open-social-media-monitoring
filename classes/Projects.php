@@ -40,8 +40,7 @@
    // Array indexes are 0-based, jCarousel positions are 1-based.
    $first = max(0, intval($_GET['first']) - 1);
    $last  = max($first + 1, intval($_GET['last']) - 1);
-   $length = $last - $first + 1;
-   
+
    $from = strtotime(date('Y-m-d', $_GET['from']));
    $to = strtotime(date('Y-m-d', $_GET['to']));
 
@@ -62,19 +61,11 @@
 	if($cnt >= $first && $cnt <= $last){
      echo '<node>'."\n".'<source>'.$search->search_source.'</source>'."\n";
      if($search->search_source == 'facebook'){
-      echo '<image>images/fb.jpg</image>'."\n";
-	  echo '<link>http://www.facebook.com/profile.php?id='.preg_replace('/_.*$/', '', $search->search_outer_id).'</link>'."\n";
+      echo '<link>http://www.facebook.com/profile.php?id='.preg_replace('/_.*$/', '', $search->search_outer_id).'</link>'."\n".
+           '<image>images/fb.jpg</image>'."\n";
      }else{
-      $query = 'SELECT * FROM '.$prefix.'search_link WHERE search_id = '.(int)$search->search_id;
-      $re2 = mysql_query($query);
-      while($re2 && $obj = mysql_fetch_object($re2)){
-	   $link = json_decode(stripslashes($obj->search_link_str));
-       if($link->{'@attributes'}->type == 'image/png'){
-	    // We are not outputting the link here as there might be more then one image/png @attributes
-        $link_output = '<link>'.$search->search_author_uri.'</link>'."\n".'<image>'.$link->{'@attributes'}->href.'</image>'."\n";
-       }
-      }
-	  echo $link_output;
+      echo '<link>https://www.twitter.com/'.$search->search_author_name.'</link>'."\n".
+           '<image>'.$search->search_author_image.'</image>'."\n";
      }
      echo preg_replace('/\&/ism', '&amp;', '<author>'.stripslashes($search->search_author_name).'</author>'."\n".'<date>'.date('F jS, Y H:i', $search->search_published).'</date>'."\n".'<content>'.substr(strip_tags(stripslashes($search->search_content)), 0, 200).'</content>')."\n";
 	 echo '</node>'."\n";	 
@@ -96,10 +87,10 @@
    a_header();
 
    echo '<table cellpadding=5 cellspacing=0 width=100% class=t1>
-          <tr><td class=he2><b>Keyword</b></td>
-              <td class=he2 width=150><b>Language</b></td>
-              <td class=he2 width=150><b>Geo Code</b></td>
-              <td align=center class=he2 width=190><b>Action</b></td>
+          <tr><td class=he2><strong>Keyword</strong></td>
+              <td class=he2 width=150><strong>Language</strong></td>
+              <td class=he2 width=150><strong>Geo Code</strong></td>
+              <td align=center class=he2 width=190><strong>Action</strong></td>
           </tr>';
    $query = 'SELECT q.* FROM '.$prefix.'query q INNER JOIN '.$prefix.'project_to_query p2q ON p2q.query_id = q.query_id WHERE p2q.project_id = '.(int)$project_id;
    $res = mysql_query($query);
@@ -237,17 +228,18 @@
    
     a_header();
 
+    $page = array();
     if($id){
      $query = 'SELECT * FROM '.$prefix.'project WHERE project_id = '.$id;
      $res = mysql_query($query);
      if($res && mysql_num_rows($res)){
-      $page = mysql_fetch_object($res);
+      $page = mysql_fetch_array($res);
 	 }
 	}
 
     echo '<form method=post action="'.$this->getUrl('projects/save').'"><input type="hidden" name="id" value="'.(int)$id.'" />
            <table>
-            <tr><td>Project Name:</td><td><input type="text" value="'.$page->project_name.'" name="project_name" /></td></tr>
+            <tr><td>Project Name:</td><td><input type="text" value="'.$page['project_name'].'" name="project_name" /></td></tr>
            </table><br />
            <div align="center"><input type=submit value="&nbsp; Save &nbsp;" class=bu> <input type=button value="Cancel" class=bu onclick="location.href = \''.$this->getUrl('projects').'\'"></div>
           </form>';
@@ -274,7 +266,7 @@
      $query = 'INSERT INTO '.$prefix.'project 
                   SET project_name = "'.$_POST['project_name'].'"';
    }
-   $res = mysql_query($query);
+   mysql_query($query);
    header('Location: '.$this->getUrl('projects'));
   }
   
@@ -303,24 +295,24 @@
    
     a_header();
 
+    $page = array();
     if($query_id){
      $query = 'SELECT * 
 	             FROM '.$prefix.'query
 				WHERE query_id = '.$query_id;
      $res = mysql_query($query);
      if($res && mysql_num_rows($res)){
-      $page = mysql_fetch_object($res);
+      $page = mysql_fetch_array($res);
 	 }
 	}
 	
 	$avail_lang = array('all' => '', 'en' => 'en', 'de' => 'de');
 	$options = '';
 	while(list($key, $val) = each($avail_lang)){
-	 $options .= '<option value="'.$val.'"'.($val == $page->query_lang ? ' selected' : '').'>'.$key.'</option>';
+	 $options .= '<option value="'.$val.'"'.($val == $page['query_lang'] ? ' selected' : '').'>'.$key.'</option>';
 	}
 
-	$radio_distanceunit = '';
-	if( $page->query_distanceunit == 'mi' )
+	if( $page['query_distanceunit'] == 'mi' )
 	{
 		$radio_distanceunit = '<input type="radio" name="query_distanceunit" value="mi" checked>miles
 							   <input type="radio" name="query_distanceunit" value="km" >kilometer';
@@ -333,11 +325,11 @@
 	
     echo '<form method=post action="'.$this->getUrl('projects/savequery').'"><input type=hidden name=id value="'.(int)$query_id.'" /><input type="hidden" name="project_id" value="'.$project_id.'" />
            <table>
-            <tr><td>Keyword:</td><td><input type="text" value="'.$page->query_q.'" name="query_q" /></td></tr>
+            <tr><td>Keyword:</td><td><input type="text" value="'.$page['query_q'].'" name="query_q" /></td></tr>
             <tr><td>Language:</td><td><select name="query_lang">'.$options.'</select></td></tr>
-            <!--tr><td>Geo Code:</td><td><input type="text" value="'.$page->query_geocode.'" name="query_geocode" /></td></tr-->
-			<tr><td>Near this place:</td><td><input type="text" value="'.$page->query_nearplace.'" name="query_nearplace" /></td></tr>
-			<tr><td>Within this distance:</td><td><input type="text" value="'.$page->query_distance.'" name="query_distance" /></td></tr>
+            <!--tr><td>Geo Code:</td><td><input type="text" value="'.$page['query_geocode'].'" name="query_geocode" /></td></tr-->
+			<tr><td>Near this place:</td><td><input type="text" value="'.$page['query_nearplace'].'" name="query_nearplace" /></td></tr>
+			<tr><td>Within this distance:</td><td><input type="text" value="'.$page['query_distance'].'" name="query_distance" /></td></tr>
 			<tr><td></td><td>'.$radio_distanceunit.'</td></tr>
            </table><br />
            <div align="center"><input type=submit value="&nbsp; Save &nbsp;" class=bu> <input type=button value="Cancel" class=bu onclick="location.href = \''.$this->getUrl('projects/queries/'.$project_id).'\'"></div>
@@ -416,7 +408,7 @@
 					 query_distance  = "'.$_POST['query_distance'].'",
 					 query_distanceunit = "'.$_POST['query_distanceunit'].'"
                WHERE query_id = "'.$_POST['id'].'"';
-    $res = mysql_query($query);
+    mysql_query($query);
    }elseif(isset($_POST['project_id']) && (int)$_POST['project_id']){
     $query = 'INSERT INTO '.$prefix.'query 
                  SET query_q = "'.$_POST['query_q'].'", 
@@ -425,11 +417,11 @@
 					 query_nearplace = "'.$_POST['query_nearplace'].'",
 					 query_distance  = "'.$_POST['query_distance'].'",
 					 query_distanceunit = "'.$_POST['query_distanceunit'].'"';
-    $res = mysql_query($query);
+    mysql_query($query);
 	$query = 'INSERT INTO '.$prefix.'project_to_query 
 	                  SET project_id = '.(int)$_POST['project_id'].',
 					      query_id = '.mysql_insert_id();
-    $res = mysql_query($query);
+    mysql_query($query);
    }
    header('Location: '.$this->getUrl('projects/queries/'.$_POST['project_id']));
   }
@@ -453,14 +445,15 @@
     $subtitle = 'Keyword: '.$info->query_q.' Language: '.$info->query_lang;
    }else{
     $title = 'Project: '.$info->project_name;
+       $subtitle = '';
 //	$subtitle = 'Daily keyword drilldown';
    }
    
    // Printing out graph JS code
 ?>
 
-<script src="http://code.highcharts.com/stock/highstock.js"></script>
-<script type="text/javascript" src="js/modules/exporting.js"></script>
+<script type="text/javascript" src="<?php echo $this->getUrl('js/highstock.js') ?>"></script>
+<script type="text/javascript" src="<?php echo $this->getUrl('js/modules/exporting.js') ?>"></script>
 <script type="text/javascript">
                 
  var chart;
@@ -493,7 +486,7 @@
    legend: { align: 'left', verticalAlign: 'top', y: 20, floating: true, borderWidth: 0 },                                        
    tooltip: { shared: true, crosshairs: true },
    plotOptions: { series: { marker: { lineWidth: 1 } } }
-  }
+  };
   
 <?php
 
@@ -515,14 +508,16 @@
        	       WHERE query_id IN ('.$query_ids.')
           	GROUP BY search_id';
 	$res = mysql_query($query);
- 	 
-	// Counting results by day and storing in $results_cnt array
+
+    $min_date = 0;
+    $max_date = 0;
+    // Counting results by day and storing in $results_cnt array
 	while($obj = mysql_fetch_object($res)){
 	 $darr = getdate($obj->date);
 	 $date = mktime(0, 0, 0, $darr['mon'], $darr['mday'], $darr['year']);
 	 $results_cnt[$type == 'query' ? $obj->source : $obj->query_id][$date]++;
-	 $min_date = isset($min_date) && $min_date < $date ? $min_date : $date;
-	 $max_date = isset($max_date) && $max_date > $date ? $max_date : $date;
+	 $min_date = $min_date && $min_date < $date ? $min_date : $date;
+	 $max_date = $max_date && $max_date > $date ? $max_date : $date;
 	}
 	
 	$query = 'SELECT * FROM '.$prefix.'search_index WHERE query_id IN ('.$query_ids.')';
@@ -541,7 +536,7 @@
 	 for($date = $min_date; $date <= $max_date; $date += 86400){
 	  echo '['.($date*1000).', '.(int)$val[$date].']'.($date+86400 > $max_date ? '];'."\n" : ',');
 	 }
-	 $name = $type == 'query' ? $key : $query_names[$key];
+	 $name = isset($query_names) ? $query_names[$key] : $key;
 	 echo 'options.series['.$series_cnt++.'].name = "'.$name.'";'."\n";
 	 echo 'active_queries["'.$name.'"] = "'.$key.'";'."\n";
 	}
@@ -590,7 +585,7 @@
 	 $query_names[$query->query_id] = $query->query_q.($query->query_lang ? ' ('.$query->query_lang.')' : '');
 	}
    }
-   return implode(', ', $query_ids);
+   return isset($query_ids) ? implode(', ', $query_ids) : '';
   }
   
   /*
@@ -602,7 +597,7 @@
   private function wire($type, $id){
 
 ?>
-<script type="text/javascript" src="js/jquery.jcarousel.min.js"></script>
+<script type="text/javascript" src="<?php echo $this->getUrl('js/jquery.jcarousel.min.js') ?>"></script>
 <script type="text/javascript">
 
 var theModelCarousel = null;
@@ -629,7 +624,7 @@ function mycarousel_itemLoadCallback(carousel, state){
         },
         'xml'
     );
-};
+}
 
 jQuery(document).ready(function(){
     jQuery('#mycarousel').jcarousel({
@@ -654,7 +649,7 @@ jQuery(document).ready(function(){
   *  @param none
   *  @return void
   */
-  function topInfluencers($type, $id, $influencers_to_show = 5){
+  function topInfluencers($id, $influencers_to_show = 5){
    global $prefix;
    
    $query = 'SELECT search_author_name, search_author_uri, cnt
@@ -678,14 +673,12 @@ jQuery(document).ready(function(){
   *  @return void
   */
   function resultsAction($type, $id){
-   global $prefix;
-   
    a_header('');
    
    // jQuery lib is declared here as it is required by graph and wire
-   echo '<script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>';
+   echo '<script type="text/javascript" src="'.$this->getUrl('js/jquery-1.4.2.min.js').'"></script>';
    $this->graph($type, $id);
-   $this->topInfluencers($type, $id);
+   $this->topInfluencers($id);
    $this->wire($type, $id);
    a_footer();   
   }

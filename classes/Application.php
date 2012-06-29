@@ -45,11 +45,12 @@ class Application{
    new $class($args);
   }
   
-  function getUrl($route = ''){
-   global $directory;
-  
-   return (preg_match('/https/i', $_SERVER['SERVER_PROTOCOL']) ? 'https://' : 'http://').$_SERVER['SERVER_NAME'].$directory.trim($route, '/').($route ? '/' : '');
-  }
+    function getUrl($route = ''){
+        global $directory;
+        $backslash = $route && !preg_match('/\.js$/ism', $route) ? '/' : '';
+
+        return (preg_match('/https/i', $_SERVER['SERVER_PROTOCOL']) ? 'https://' : 'http://').$_SERVER['SERVER_NAME'].$directory.trim($route, '/').$backslash;
+    }
   
   public function log($string){
    if(file_exists('logs/system.log') && is_writable('logs/system.log')){

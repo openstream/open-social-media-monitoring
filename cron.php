@@ -23,14 +23,103 @@
 	   INNER JOIN '.$prefix.'query q ON q.query_id = p2q.query_id
 	   		WHERE p.project_status = 1';
  $res = mysql_query($query);
- while($res && $obj = mysql_fetch_object($res)){
-  $active_queries[] = $obj->query_id;
-  new Twitter($obj);
-  new FaceBook($obj);
- }
+
+while($res && $obj = mysql_fetch_object($res)){
+    $active_queries[] = $obj->query_id;
+
+    /**
+     *  Twitter
+     */
+    $last_tweet_id = 0;
+    $base_url = 'http://search.twitter.com/search.json';
+    $parameters = array(
+        'q'             => $obj->query_q,
+        'geocode'       => $obj->query_geocode,
+        'rpp'           => 100,
+        'result_type'   => 'recent',
+        'since_id'      => $obj->query_last_twitter,
+        'lang'          => $obj->query_lang
+    );
+    $response = _get_file_contents($base_url, $parameters, true);
+    while(is_object($response) && isset($response->results) && is_array($response->results) && list(,$entry) = each($response->results)) {
+        if(!$last_tweet_id){
+            $last_tweet_id = $entry->id_str;
+            $query = 'UPDATE '.$prefix.'query SET query_last_twitter = "'.$last_tweet_id.'"';
+            mysql_query($query);
+        }
+        $query = 'INSERT INTO '.$prefix.'search
+	                  SET query_id = '.$obj->query_id.',
+					      search_outer_id = "'.$entry->id_str.'",
+						  search_source = "twitter",
+						  search_published = '.strtotime($entry->created_at).',
+						  search_content = "'.addslashes($entry->text).'",
+						  search_author_name = "'.addslashes($entry->from_user).'",
+						  search_author_image = "'.$entry->profile_image_url.'"';
+        mysql_query($query);
+
+        $query = 'INSERT INTO '.$prefix.'search_influencers
+    				  SET query_id = '.$entry->id_str.',
+    					  search_author_name = "'.$entry->from_user.'",
+    					  search_source = "twitter",
+    					  cnt = 1
+  ON DUPLICATE KEY UPDATE cnt = cnt + 1';
+        mysql_query($query);
+    }
+
+    /**
+     *  Facebook
+     */
+    $last_facebook_post_time = 0;
+    $base_url = 'https://graph.facebook.com/search';
+    $parameters = array(
+        'q'     => $obj->query_q,
+        'type'  => 'post',
+        'limit' => 100,
+        'since' => $obj->query_last_facebook
+    );
+    $response = _get_file_contents($base_url, $parameters, true);
+    $alchemy_base_url = 'http://access.alchemyapi.com/calls/text/TextGetLanguage';
+    $lang = array();
+    while(is_object($response) && isset($response->data) && is_array($response->data) && list(,$entry) = each($response->data)){
+        $text = $entry->message ? $entry->message : $entry->story;
+        if($obj->query_lang && $alchemy_api_key){
+            $parameters = array(
+                'apikey'        => $alchemy_api_key,
+                'outputMode'    => 'json',
+                'text'          => $text
+            );
+            $lang = _get_file_contents($alchemy_base_url, $parameters, true, true);
+        }
+        if(!$obj->query_lang || !$alchemy_api_key || ($obj->query_lang && $obj->query_lang == $lang['iso-639-1'])){
+            $created_time = strtotime($entry->created_time);
+            if(!$last_facebook_post_time){
+                $last_facebook_post_time = date('n/j/Y H:i:s', $created_time);
+                $query = 'UPDATE '.$prefix.'query SET query_last_facebook = "'.$last_facebook_post_time.'"';
+                mysql_query($query);
+            }
+            $query = 'INSERT INTO '.$prefix.'search
+                   SET query_id = '.$obj->query_id.',
+                       search_outer_id = "'.$entry->id.'",
+                       search_source = "facebook",
+                       search_published = '.$created_time.',
+                       search_title = "'.addslashes($entry->name).'",
+                       search_content = "'.$text.'",
+                       search_author_name = "'.addslashes($entry->from->name).'"';
+            mysql_query($query);
+
+            $query = 'INSERT INTO '.$prefix.'search_influencers
+                   SET query_id = '.$obj->query_id.',
+                       search_author_name = "'.addslashes($entry->from->name).'",
+                       search_source => "facebook",
+                       cnt = 1
+ON DUPLICATE KEY UPDATE cnt = cnt + 1';
+            mysql_query($query);
+        }
+    }
+}
  
  // Archiving expired entries.
- $query = 'SELECT search_id, query_id, search_source, search_published, search_author_name, search_author_uri FROM '.$prefix.'search WHERE query_id IN ('.implode(', ', $active_queries).') AND search_published < '.(time() - $keep_history*24*3600);
+ $query = 'SELECT * FROM '.$prefix.'search WHERE query_id IN ('.implode(', ', $active_queries).') AND search_published < '.(time() - $keep_history*24*3600);
  $re0 = mysql_query($query);
  if($re0 && $num_rows = mysql_num_rows($re0)){
   echo 'Archiving '.$num_rows.' entries.'."\n";
@@ -43,10 +132,8 @@
    mysql_query($query);
    $query = 'DELETE FROM '.$prefix.'search WHERE search_id = '.$a_obj->search_id;
    mysql_query($query);
-   $query = 'DELETE FROM '.$prefix.'search_link WHERE search_id = '.$a_obj->search_id;
-   mysql_query($query);
   }
-  $query = 'OPTIMIZE TABLE '.$prefix.'search, '.$prefix.'search_link';
+  $query = 'OPTIMIZE TABLE '.$prefix.'search';
   mysql_query($query);
   echo "\n";
  }
@@ -92,8 +179,30 @@
   return $ret;
  }
 
- function __autoload($class_name) {
-   require_once(dirname(__file__).'/classes/'.$class_name.'.php');
- }
-  
-?>
+function _get_file_contents($url, $parameters, $json_decode = false, $json_assoc = false)
+{
+    $url = _appendQueryParams($url, $parameters);
+    $response = file_get_contents($url);
+    if($json_decode){
+        $response = @json_decode($response, $json_assoc);
+    }
+    return $response;
+}
+
+/**
+ * Append the array of parameters to the given URL string
+ *
+ * @param string $url
+ * @param array $params
+ * @return string
+ */
+function _appendQueryParams($url, array $params)
+{
+    foreach ($params as $k => $v) {
+        if(trim($v)){
+            $url .= strpos($url, '?') === false ? '?' : '&';
+            $url .= sprintf("%s=%s", $k, urlencode(trim($v)));
+        }
+    }
+    return $url;
+}

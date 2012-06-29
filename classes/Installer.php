@@ -71,7 +71,7 @@ DROP TABLE IF EXISTS '.$_POST['prefix'].'project;
 CREATE TABLE IF NOT EXISTS '.$_POST['prefix'].'project (
   project_id int(10) unsigned NOT NULL AUTO_INCREMENT,
   project_name varchar(255) NOT NULL,
-  project_status TINYINT( 1 ) UNSIGNED NOT NULL DEFAULT \'1\',
+  project_status TINYINT(1) UNSIGNED NOT NULL DEFAULT \'1\',
   PRIMARY KEY (project_id)
 );
 
@@ -91,6 +91,8 @@ CREATE TABLE IF NOT EXISTS '.$_POST['prefix'].'query (
   query_nearplace varchar(255) NOT NULL,
   query_distance int(10) NOT NULL,
   query_distanceunit varchar(30) NOT NULL,
+  query_last_twitter varchar(255) NOT NULL,
+  query_last_facebook varchar(255) NOT NULL,
   PRIMARY KEY (query_id)
 );
 
@@ -104,7 +106,7 @@ CREATE TABLE IF NOT EXISTS '.$_POST['prefix'].'search (
   search_title VARCHAR( 255 ) NOT NULL ,
   search_content TEXT NOT NULL ,
   search_author_name VARCHAR( 255 ) NOT NULL ,
-  search_author_uri VARCHAR( 255 ) NOT NULL ,  
+  search_author_image VARCHAR( 255 ) NOT NULL ,
   PRIMARY KEY (search_id)
 );
 
@@ -123,15 +125,8 @@ CREATE TABLE '.$_POST['prefix'].'search_influencers (
   search_author_name varchar(255) NOT NULL,
   search_author_uri varchar(255) NOT NULL,
   cnt int(5) unsigned NOT NULL,
+  search_source varchar(255) NOT NULL,
   UNIQUE KEY query_id (query_id,search_author_name)
-);
-
-DROP TABLE IF EXISTS '.$_POST['prefix'].'search_link;
-CREATE TABLE IF NOT EXISTS '.$_POST['prefix'].'search_link (
-  search_link_id int(10) unsigned NOT NULL AUTO_INCREMENT,
-  search_id int(10) unsigned NOT NULL,
-  search_link_str text NOT NULL,
-  PRIMARY KEY (search_link_id)
 );
 
 ';
