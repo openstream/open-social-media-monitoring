@@ -41,8 +41,8 @@ class MIMEMail{
  }
 
  function clear($fname){
-  unset($atcmnt[$fname]);
-  unset($atcmnt_type[$fname]);
+  unset($this->atcmnt[$fname]);
+  unset($this->atcmnt_type[$fname]);
  }
 
  function  makeheader() {

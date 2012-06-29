@@ -13,15 +13,6 @@
 
  class Login extends Application{
  
-  function __construct($args){
-   // Searching for a method name and calling either it or default method
-   if(is_array($args) && count($args) && method_exists($this, strtolower($args[0]).'Action')){
-	call_user_func_array(array($this, strtolower($args[0]).'Action'), array_slice($args, 1));
-   }else{
-	$this->defaultAction();
-   }
-  }
-  
   function defaultAction(){
    global $directory;
   

@@ -58,7 +58,7 @@ while($res && $obj = mysql_fetch_object($res)){
         mysql_query($query);
 
         $query = 'INSERT INTO '.$prefix.'search_influencers
-    				  SET query_id = '.$entry->id_str.',
+    				  SET query_id = '.$entry->query_id.',
     					  search_author_name = "'.$entry->from_user.'",
     					  search_source = "twitter",
     					  cnt = 1
