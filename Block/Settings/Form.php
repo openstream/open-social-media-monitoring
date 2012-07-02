@@ -2,10 +2,17 @@
 
 class Block_Settings_Form extends Block_Settings
 {
+    public $formAction;
+
+    public function __construct()
+    {
+        $this->formAction = $this->getUrl('settings/save');
+    }
+
     public function output(){
         global $admPassword, $adminEmail, $defaultFrom, $dbHost, $dbUser, $dbPassword, $dbName, $prefix, $keep_history, $alchemy_api_key;
 
-        return $this->openTable('Server Configuration').'<table width="632" cellpadding=4 cellspacing=2><form method=post action="'.$this->getUrl('settings/save').'">
+        return $this->openTable('Server Configuration').'<table width="632" cellpadding=4 cellspacing=2><form method=post action="'.$this->formAction.'">
             <tr><td align=right><b>Administrator E-Mail:</b></td><td style="padding-top:2px;padding-bottom:2px;"><input name=adminEmail size="50" value="'.$adminEmail.'"></td></tr>
             <tr><td align=right><b>Administator Password:</b></td><td style="padding-top:2px;padding-bottom:2px;"><input type=password name=admPassword size="50" value="'.$admPassword.'"></td></tr>
             <tr><td align=right><b>Default From Address:</b></td><td style="padding-top:2px;padding-bottom:2px;"><input name=defaultFrom size="50" value="'.$defaultFrom.'"></td></tr>

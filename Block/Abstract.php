@@ -4,23 +4,30 @@ class Block_Abstract
 {
     private $_processList = array();
 
-    public function processBlock($blockName)
+    public function processBlock($blockName, $arguments = array())
     {
         $blockName = trim($blockName);
         if($blockName) {
-            $this->_processList[] = $blockName;
+            $this->_processList[] = array('block' => $blockName, 'arguments' => $arguments);
         }
     }
 
-    public function renderLayout()
+    public function renderLayout($noDesign = false)
     {
-        $this->a_header();
-        foreach($this->_processList as $block){
-            /** @var $block Block_Abstract */
-            $block = Application::getBlock($block);
-            echo $block->output();
+        if(!$noDesign){
+            $this->a_header();
         }
-        $this->a_footer();
+        foreach($this->_processList as $block){
+            /** @var $iBlock Block_Abstract */
+            $iBlock = Application::getBlock($block['block']);
+            while(list($key, $val) = each($block['arguments'])) {
+                $iBlock->{$key} = $val;
+            }
+            echo $iBlock->output();
+        }
+        if(!$noDesign){
+            $this->a_footer();
+        }
     }
 
     public function output()
