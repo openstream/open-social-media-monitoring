@@ -1,0 +1,24 @@
+<table cellpadding=5 cellspacing=0 width=100% class=t1>
+    <tr><td class=he2><strong>Keyword</strong></td>
+        <td class=he2 width=150><strong>Language</strong></td>
+        <td class=he2 width=150><strong>Geo Code</strong></td>
+        <td align=center class=he2 width=190><strong>Action</strong></td>
+    </tr>
+
+    <?php foreach($this->keywords as $keyword) : ?>
+
+    <tr>
+        <td align=center class=rw><?php echo $keyword['query_q'] ?></td>
+        <td class=rw align=center><?php echo $keyword['query_lang'] ? $keyword['query_lang'] : '-' ?></td>
+        <td class=rw align=center><?php echo $keyword['query_geocode'] ? $keyword['query_geocode'] : '-' ?></td>
+        <td class=rw align=center>
+            <a href="<?php echo $this->getUrl('*/result/keyword/id/' . $keyword['query_id']) ?>">results</a> -
+            <a href="<?php echo $this->getUrl('*/*/edit/id/' . $keyword['query_id'] . '/campaign/' . $this->campaign_id) ?>" onclick="return confirm('Are you sure? All keyword stored data will be wiped out.');">edit</a> -
+            <a href="<?php echo $this->getUrl('*/*/delete/id/' . $keyword['query_id'] . '/campaign/' . $this->campaign_id) ?>" onclick="return confirm('Are you sure? All keyword stored data will be wiped out.');">delete</a>
+        </td>
+    </tr>
+
+    <?php endforeach ?>
+
+</table><br />
+<input type="button" class="bu" value="Add Keyword" onclick="location.href = '<?php echo $this->getUrl('*/*/edit/campaign/' . $this->campaign_id) ?>'"/>

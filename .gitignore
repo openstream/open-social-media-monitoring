@@ -1,3 +1,2 @@
 /.idea
-/settings.php
-/.htaccess
+/config/local.ini

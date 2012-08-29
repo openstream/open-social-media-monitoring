@@ -1,0 +1,23 @@
+<table cellpadding="5" cellspacing="0" width="100%" class="t1t">
+<?php foreach ($this->campaigns as $campaign) : ?>
+
+    <tr<?php echo $campaign->project_status ? '' : ' class="disabled"' ?>>
+        <td class="rw">
+            <h4><a href="<?php echo $this->getUrl('*/*/results/campaign/' . $campaign->project_id) ?>"><?php echo $campaign->project_name ?></a></h4>
+            Weekly mentions: <?php echo $this->additional_data[$campaign->project_id]['weekly'] ?> |
+            Daily Mentions: <?php echo $this->additional_data[$campaign->project_id]['daily'] ?><br />
+            Keywords: <?php echo $this->additional_data[$campaign->project_id]['keywords'] ?>
+        </td>
+        <td class="rw" style="padding-right:25px;" align="right">
+		    <a href="<?php echo $this->getUrl('*/result/campaign/id/' . $campaign->project_id) ?>">results</a> -
+            <a href="<?php echo $this->getUrl('*/keyword/index/campaign/' . $campaign->project_id) ?>">keywords</a> -
+            <a href="<?php echo $this->getUrl('*/*/edit/campaign/' . $campaign->project_id) ?>">edit</a> -
+            <a href="<?php echo $this->getUrl('*/*/status/campaign/' . $campaign->project_id) ?>"><?php echo $campaign->project_status ? 'disable' : 'enable' ?></a> -
+            <a href="<?php echo $this->getUrl('*/*/delete/campaign/' . $campaign->project_id) ?>" onclick="return confirm('Are you sure? All keyword(s) data will be wiped out.');">delete</a>
+        </td>
+    </tr>
+
+<?php endforeach ?>
+</table><br/>
+
+<input type="button" class="bu" value="Add Project" onclick="location.href = '<?php echo $this->getUrl('*/*/edit') ?>'"/>

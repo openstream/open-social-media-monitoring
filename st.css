@@ -2,156 +2,67 @@
  Open Social Media Monitoring
  http://www.open-social-media-monitoring.net
 
- Copyright (c) 2011 Openstream Internet Solutions
+ Copyright (c) 2012 Openstream Internet Solutions
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License v3 (2007)
  as published by the Free Software Foundation.
 */
 
-body{ background-color: #d7d7d7; margin:0px; font-family:'Lucida Grande', 'Lucida Sans Unicode', Verdana, Arial, Helvetica, sans-serif; font-size:11px; color:#666666; }
+body{ background-color: #d7d7d7; margin: 30px 0; font-family:'Lucida Grande', 'Lucida Sans Unicode', sans-serif; font-size:11px; color:#666666; }
 a{ text-decoration: none; color: #2D97D5; }
 a:hover{ text-decoration: underline; }
-a img{ border-width:0px; }
-td, input, textarea, select{ font-family: Tahoma, Arial; font-size: 11px; color: #666666; }
+a img{ border-width:0; }
+td, input, textarea, select{ font-size: 11px; color: #666666; }
 .m1{ padding-left: 15px; padding-right: 15px; padding-bottom: 15px; }
 .m2{ color: #2D97D5; font-weight: bold; }
 .he{ font-size: 12px; font-weight: bold; }
 .he2{ background-color: #EBEBE9; border-top: #D7D7D2 solid 1px; border-bottom: #D7D7D2 solid 1px; text-align: center; }
 .t1, .t1t{ border-left: #D7D7D2 solid 1px; border-right: #D7D7D2 solid 1px; }
 .t1t{ border-top:#d7d7d2 solid 1px; }
-.t1t td h4{ font-size:14px; font-weight:normal; margin:0px 0px 4px 0px; }
+.t1t td h4{ font-size:14px; font-weight:normal; margin:0 0 4px 0; }
 .rw{ background-color: #F8F8F8; border-bottom: #D7D7D2 solid 1px; }
 .bu{ color: #FFFFFF; background-color: #296DAA; font-weight: bold; border:#5088BA solid 1px; border-bottom-color: #1F5281; border-right-color: #1F5281; }
 .he3{ font-weight: bold; color: #666666; text-align: center; }
 .in{ width: 280px; padding-left: 3px; border: #CCCCCC solid 1px; }
-.footer{ width:766px; height:37px; background-image:url(images/a11.gif); text-align:center; margin:0 auto; margin-bottom:30px; padding-top:6px; }
+.footer{ width:766px; height:37px; background-image:url(images/a11.gif); text-align:center; margin:0 auto 30px auto; padding-top:6px; }
 
+.error, .error label { color:#FF0000 }
+.error input { border-color: #FF0000 }
+pre.error { width: 650px; overflow-x: scroll; color:#666666; }
 
+.left{ float:left; }
+.right{ float:right; }
+.clear{ clear:both; }
 
-.left{
- float:left;
-}
-.right{
- float:right;
-}
-.clear{
- clear:both;
-}
-
-.results-container{
- border-bottom:#bbbbbb solid 1px;
- padding-top:3px;
- padding-bottom:6px;
-}
-.results-container img{
- height:48px;
- width:48px;
- margin-right:10px;
- margin-top:3px;
-}
-.results-container .date{
- color:#bbbbbb;
- font-size:10px;
-}
-.results-container.facebook{
- background-color:#2e4576;
- border-bottom-color:#2e4576;
- color:#ffffff;
-}
-.results-container .msg-text{
- width:577px;
-}
+.results-container{ border-bottom:#bbbbbb solid 1px; padding-top:3px; padding-bottom:6px; }
+.results-container img{ height:48px; width:48px; margin-right:10px; margin-top:3px; }
+.results-container .date{ color:#bbbbbb; font-size:10px; }
+.results-container.facebook{ background-color:#2e4576; border-bottom-color:#2e4576; color:#ffffff; }
+.results-container .msg-text{ width:577px; }
 
 /* -- carousel --*/
-
-.jcarousel-skin-tango .jcarousel-container {
-}
-
-.jcarousel-skin-tango .jcarousel-container-vertical {
-    width: 650px;
-    height: 630px;
-    padding: 40px 0px;
-}
-
-.jcarousel-skin-tango .jcarousel-clip {
-    overflow: hidden;
-}
-
-.jcarousel-skin-tango .jcarousel-clip-vertical {
-    width:  650px;
-    height: 630px;
-}
-
-.jcarousel-skin-tango .jcarousel-item {
-    width: 650px;
-    height: 63px;
-	overflow:hidden;
-}
-
-.jcarousel-skin-tango .jcarousel-item-vertical {
-}
-
-.jcarousel-skin-tango .jcarousel-item-placeholder {
-    background: #FFFFFF;
-}
-
-/**
- *  Vertical Buttons
- */
-.jcarousel-skin-tango .jcarousel-next-vertical {
-    position: absolute;
-    bottom: 5px;
-    left: 305px;
-    width: 32px;
-    height: 32px;
-    cursor: pointer;
-    background: transparent url(images/next-vertical.png) no-repeat 0 0;
-}
-
-.jcarousel-skin-tango .jcarousel-next-vertical:hover,
-.jcarousel-skin-tango .jcarousel-next-vertical:focus {
-    background-position: 0 -32px;
-}
-
-.jcarousel-skin-tango .jcarousel-next-vertical:active {
-    background-position: 0 -64px;
-}
-
+.jcarousel-skin-tango .jcarousel-container {}
+.jcarousel-skin-tango .jcarousel-container-vertical { width: 650px; height: 630px; padding: 40px 0; }
+.jcarousel-skin-tango .jcarousel-clip { overflow: hidden; }
+.jcarousel-skin-tango .jcarousel-clip-vertical { width: 650px; height: 630px; }
+.jcarousel-skin-tango .jcarousel-item { width: 650px; height: 63px; overflow:hidden; }
+.jcarousel-skin-tango .jcarousel-item-vertical {}
+.jcarousel-skin-tango .jcarousel-item-placeholder { background: #FFFFFF; }
+.jcarousel-skin-tango .jcarousel-next-vertical { position: absolute; bottom: 5px; left: 305px; width: 32px; height: 32px; cursor: pointer; background: transparent url(images/next-vertical.png) no-repeat 0 0; }
+.jcarousel-skin-tango .jcarousel-next-vertical:hover, .jcarousel-skin-tango .jcarousel-next-vertical:focus { background-position: 0 -32px; }
+.jcarousel-skin-tango .jcarousel-next-vertical:active { background-position: 0 -64px; }
 .jcarousel-skin-tango .jcarousel-next-disabled-vertical,
 .jcarousel-skin-tango .jcarousel-next-disabled-vertical:hover,
 .jcarousel-skin-tango .jcarousel-next-disabled-vertical:focus,
-.jcarousel-skin-tango .jcarousel-next-disabled-vertical:active {
-    cursor: default;
-    background-position: 0 -96px;
-}
-
-.jcarousel-skin-tango .jcarousel-prev-vertical {
-    position: absolute;
-    top: 5px;
-    left: 305px;
-    width: 32px;
-    height: 32px;
-    cursor: pointer;
-    background: transparent url(images/prev-vertical.png) no-repeat 0 0;
-}
-
-.jcarousel-skin-tango .jcarousel-prev-vertical:hover,
-.jcarousel-skin-tango .jcarousel-prev-vertical:focus {
-    background-position: 0 -32px;
-}
-
-.jcarousel-skin-tango .jcarousel-prev-vertical:active {
-    background-position: 0 -64px;
-}
-
+.jcarousel-skin-tango .jcarousel-next-disabled-vertical:active { cursor: default; background-position: 0 -96px; }
+.jcarousel-skin-tango .jcarousel-prev-vertical { position: absolute; top: 5px; left: 305px; width: 32px; height: 32px; cursor: pointer; background: transparent url(images/prev-vertical.png) no-repeat 0 0; }
+.jcarousel-skin-tango .jcarousel-prev-vertical:hover, .jcarousel-skin-tango .jcarousel-prev-vertical:focus { background-position: 0 -32px; }
+.jcarousel-skin-tango .jcarousel-prev-vertical:active { background-position: 0 -64px; }
 .jcarousel-skin-tango .jcarousel-prev-disabled-vertical,
 .jcarousel-skin-tango .jcarousel-prev-disabled-vertical:hover,
 .jcarousel-skin-tango .jcarousel-prev-disabled-vertical:focus,
-.jcarousel-skin-tango .jcarousel-prev-disabled-vertical:active {
-    cursor: default;
-    background-position: 0 -96px;
-}
+.jcarousel-skin-tango .jcarousel-prev-disabled-vertical:active { cursor: default; background-position: 0 -96px; }
 
 #message-container { position:absolute; }
 .popup { display:none; position:relative; z-index:50; top:4px; left:-150px; }
@@ -160,7 +71,7 @@ td, input, textarea, select{ font-family: Tahoma, Arial; font-size: 11px; color:
 .popup td.top { background-image: url(images/bubble-2.png); }
 .popup td#topright { background-image: url(images/bubble-3.png); }
 .popup td.bg-left { background-image: url(images/bubble-4.png); }
-.popup td.bg-right { background-image: url(images/bubble-5.png); background-repeat:repeat-y; padding-left:1px; }
+.popup td.bg-right { background: url(images/bubble-5.png) repeat-y; padding-left:1px; }
 .popup td#bottomleft { background-image: url(images/bubble-6.png); }
 .popup td.bottom { background-image: url(images/bubble-7.png); text-align: center;}
 .popup td.bottom img { display: block; margin: 0 auto; }
@@ -168,7 +79,7 @@ td, input, textarea, select{ font-family: Tahoma, Arial; font-size: 11px; color:
 .popup td.popup-contents { font-size: 12px; line-height: 1.2em; background-color: #fff; color:#333333; }
 .popup p.hide-note{ font-size:11px; color:#bbbbbb; }
 
-.user{ background:url(images/icon-user.png) no-repeat 0px 1px; padding:0px 0px 2px 15px; }
+.user{ background:url(images/icon-user.png) no-repeat 0 1px; padding: 0 0 2px 15px; }
 h3{ margin-top:20px; margin-bottom:10px; font-weight:normal; font-size:16px; }
 
 .installer{ background-color:#FFFFFF; margin-top:100px; }

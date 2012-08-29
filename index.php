@@ -1,30 +1,19 @@
 <?php
 
- /*
- Open Social Media Monitoring
- http://www.open-social-media-monitoring.net
+defined('BASE_PATH') || define('BASE_PATH', realpath(dirname(__FILE__)));
+defined('APPLICATION_PATH') || define('APPLICATION_PATH', BASE_PATH );
+defined('APPLICATION_ENV') || define('APPLICATION_ENV', (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'development'));
 
- Copyright (c) 2011 Openstream Internet Solutions
+set_include_path(implode(PATH_SEPARATOR, array(
+    realpath(APPLICATION_PATH . '/library'),
+    APPLICATION_PATH . '/modules/admin/models' ,
+    get_include_path(),
+)));
+set_include_path(APPLICATION_PATH . '/library' . PATH_SEPARATOR . APPLICATION_PATH . '/library/Zend');
 
- This program is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License v3 (2007)
- as published by the Free Software Foundation.
- */
+/** Zend_Application */
+require_once 'Zend/Application.php';
 
-if(file_exists('settings.php')){
-    include('settings.php');
-}
-
-Application::run();
-
-function __autoload($class_name)
-{
-    /* backward compatibility (until `classes` dir exists) */
-    if(!preg_match('/^Model_|^Block_/', $class_name)){
-        $class_name = 'classes/'.$class_name;
-    }
-    $class_name = dirname(__FILE__).'/'.str_replace('_', '/', $class_name).'.php';
-    if(file_exists($class_name)){
-        require_once($class_name);
-    }
-}
+// Create application, bootstrap, and run
+$application = new Zend_Application(APPLICATION_ENV, APPLICATION_PATH . '/configs/application.ini');
+$application->bootstrap()->run();

@@ -1,0 +1,67 @@
+<?php $this->placeholder('graph')->captureStart() ?>
+
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/highstock.js') ?>"></script>
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/modules/exporting.js') ?>"></script>
+<script type="text/javascript">
+
+    var chart;
+    jQuery(document).ready(function() {
+        var options = {
+            chart: { renderTo: 'container', marginTop: 57, events: {
+                redraw: function(){
+                    extrems = this.xAxis[0].getExtremes();
+                    theModelCarousel.reset();
+                },
+                load: function(){
+                    extrems = this.xAxis[0].getExtremes();
+                }
+            } },
+            title: { text: '<?php echo $this->title ?>' },
+            subtitle: { text: '<?php echo $this->subtitle ?>' },
+            rangeSelector: { selected: 0 },
+            yAxis: [{ // left y axis
+                title: { text: null },
+                labels: { align: 'left', x: 3, y: 16, formatter: function() { return Highcharts.numberFormat(this.value, 0); } },
+                showFirstLabel: false
+            }, { // right y axis
+                linkedTo: 0,
+                gridLineWidth: 0,
+                opposite: true,
+                title: { text: null },
+                labels: { align: 'right', x: -3, y: 16, formatter: function() { return Highcharts.numberFormat(this.value, 0); } },
+                showFirstLabel: false
+            }],
+            legend: { align: 'left', verticalAlign: 'top', y: 20, floating: true, borderWidth: 0 },
+            tooltip: { shared: true, crosshairs: true },
+            plotOptions: { series: { marker: { lineWidth: 1 } } },
+            series: [
+                <?php while (list($keyword_id, $val) = each($this->results_cnt)) : ?>
+                {
+                    data: [
+                        <?php for ($date = $this->min_date; $date <= $this->max_date; $date += 86400) : ?>
+                            [<?php echo $date*1000 ?>, <?php echo (int)$val[$date] ?>],
+                        <?php endfor; ?>
+                    ],
+                    name: "<?php echo isset($this->keyword_titles) ? $this->keyword_titles[$keyword_id] : $keyword_id ?>"
+                },
+                <?php endwhile; ?>
+            ]
+        };
+
+        Highcharts.setOptions({global:{useUTC:false}});
+        chart = new Highcharts.StockChart(options);
+
+    <?php if(!isset($_COOKIE['msg_legend_hide'])) : ?>
+        jQuery('#container').prepend('<div id="message-container"><table class="popup" cellspacing="0" cellpadding="0"><tr><td id="topleft" class="corner"></td><td class="top"></td><td id="topright" class="corner"></td></tr><tr><td class="bg-left"></td><td class="popup-contents">Click on legend labels<br />to change graph view.<p class="hide-note">Click on this cloud to hide.</p></td><td class="bg-right"><img width="30" height="29" alt="popup tail" src="images/bubble-tail.png"/></td></tr><tr><td class="corner" id="bottomleft"></td><td class="bottom"></td><td id="bottomright" class="corner"></td></tr></tbody></table></div>');
+        setTimeout(function () { jQuery('.popup').animate({ opacity:'toggle', left:'-=10px' }, 250, 'swing'); }, 3000);
+        jQuery('.popup').live('click', function() {
+            jQuery(this).animate({ opacity:'toggle', left:'+=10px' }, 250, 'swing');
+            document.cookie = 'msg_legend_hide=1; expires=Thu, 1 Dec <?php echo date('Y') + 1 ?> 20:00:00 UTC; path=/'
+        });
+        <?php endif; ?>
+
+    });
+
+</script>
+<div id="container" style="width:650px; height:400px; margin:0 auto"></div>
+<?php $this->placeholder('graph')->captureEnd() ?>

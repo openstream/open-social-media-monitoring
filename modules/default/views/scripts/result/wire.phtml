@@ -1,0 +1,43 @@
+<?php $this->placeholder('wire')->captureStart() ?>
+
+<script type="text/javascript" src="<?php echo $this->baseUrl('js/jquery.jcarousel.min.js') ?>"></script>
+<script type="text/javascript">
+
+    var theModelCarousel = null;
+    var active_queries = new Array;
+    var exclude_series = new Array;
+
+    function mycarousel_itemLoadCallback(carousel, state){
+        theModelCarousel = carousel;
+        jQuery.get(
+            '<?php echo $this->getUrl('*/*/wirexml') ?>',
+            {
+                ids: "<?php echo $this->query_ids ?>",
+                first: carousel.first,
+                last: carousel.last,
+                from: extrems.min/1000,
+                to: extrems.max/1000 + 3600 * 24
+            },
+            function(xml) {
+                carousel.size(parseInt(jQuery('total', xml).html()));
+                jQuery('node', xml).each(function(i) {
+                    carousel.add(carousel.first + i, '<div class="results-container' + (jQuery('t_source', this).text() == 'facebook' ? ' facebook' : '') + '"><div class="left"><a href="' + $('t_link', this).text() + '" target="_blank" title="' + $('t_author', this).text() + '" onclick="blur();"><img src="' + $('t_image', this).text() + '" alt="' + $('t_author', this).text() + '" /></a></div><div class="left msg-text"><strong>' + $('t_author', this).text() + '</strong><div class="date">' + $('t_date', this).text() + '</div>' + $('t_content', this).text().replace(/&amp;/, '&') + '</div><div class="clear"></div></div>');
+                });
+            }
+        );
+    }
+
+    jQuery(document).ready(function(){
+        jQuery('#mycarousel').jcarousel({
+            vertical: true,
+            scroll: 10,
+            itemLoadCallback: mycarousel_itemLoadCallback
+        });
+    });
+
+</script>
+
+<h3>Raw Stream</h3>
+<div id="mycarousel" class="jcarousel-skin-tango"><ul><!-- The content will be dynamically loaded in here --></ul></div>
+
+<?php $this->placeholder('wire')->captureEnd() ?>

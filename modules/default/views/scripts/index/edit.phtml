@@ -1,0 +1,9 @@
+<form method=post action="<?php echo $this->getUrl('*/*/save') ?>"><input type="hidden" name="id" value="<?php echo $this->campaign->project_id ?>" />
+    <table>
+        <tr>
+            <td><label for="project-name">Project Name:</label></td>
+            <td><input type="text" value="<?php echo $this->campaign->project_name ?>" name="project_name" id="project-name"/></td>
+        </tr>
+    </table><br />
+    <div align="center"><input type=submit value="&nbsp; Save &nbsp;" class=bu> <input type=button value="Cancel" class=bu onclick="location.href = '<?php echo $this->getUrl('*') ?>'"></div>
+</form>

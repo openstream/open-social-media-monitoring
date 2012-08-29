@@ -1,0 +1,27 @@
+<?php
+
+/*echo '<?xml version="1.0"?>'."\n";*/
+$cnt = 0;
+
+?>
+<data>
+    <total><?php echo count($this->stream) ?></total>
+    <?php foreach ($this->stream as $search) : ?>
+        <?php if ($cnt >= $this->first && $cnt <= $this->last) : ?>
+        <node>
+            <t_source><?php echo $search['search_source'] ?></t_source>
+            <?php if($search['search_source'] == 'facebook') : ?>
+                <t_link>http://www.facebook.com/profile.php?id=<?php echo preg_replace('/_.*$/', '', $search['search_outer_id']) ?></t_link>
+                <t_image><?php echo $this->baseUrl('images/fb.jpg') ?></t_image>
+            <?php else : ?>
+                <t_link>https://www.twitter.com/<?php echo $search['search_author_name'] ?></t_link>
+                <t_image><?php echo $search['search_author_image'] ?></t_image>
+            <?php endif; ?>
+            <t_author><?php echo preg_replace('/\&/ism', '&amp;', stripslashes($search['search_author_name'])) ?></t_author>
+            <t_date><?php echo date('F jS, Y H:i', $search['search_published']) ?></t_date>
+            <t_content><?php echo preg_replace('/\&/ism', '&amp;', substr(strip_tags(stripslashes($search['search_content'])), 0, 200)) ?></t_content>
+        </node>
+        <?php endif; ?>
+        <?php $cnt++; ?>
+    <?php endforeach; ?>
+</data>
