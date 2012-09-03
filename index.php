@@ -15,5 +15,5 @@ set_include_path(APPLICATION_PATH . '/library' . PATH_SEPARATOR . APPLICATION_PA
 require_once 'Zend/Application.php';
 
 // Create application, bootstrap, and run
-$application = new Zend_Application(APPLICATION_ENV, APPLICATION_PATH . '/configs/application.ini');
+$application = new Zend_Application(APPLICATION_ENV, APPLICATION_PATH . '/configs/application.xml');
 $application->bootstrap()->run();

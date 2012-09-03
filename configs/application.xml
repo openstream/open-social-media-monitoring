@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<zend-config xmlns:zf="http://framework.zend.com/xml/zend-config-xml/1.0/">
+    <production>
+        <version>0.2.0</version>
+        <phpSettings>
+            <display_startup_errors>0</display_startup_errors>
+            <display_errors>0</display_errors>
+        </phpSettings>
+        <includePaths>
+            <library><zf:const zf:name="APPLICATION_PATH"/>/library</library>
+        </includePaths>
+        <bootstrap>
+            <path><zf:const zf:name="APPLICATION_PATH"/>/Bootstrap.php</path>
+            <class>Bootstrap</class>
+        </bootstrap>
+        <autoloaderNamespaces>
+            <osmm>Osmm_</osmm>
+        </autoloaderNamespaces>
+        <resources>
+            <frontController>
+                <moduleDirectory><zf:const zf:name="APPLICATION_PATH"/>/modules</moduleDirectory>
+                <plugins>
+                    <superduperplugin>Osmm_Controller_Plugin_Setup</superduperplugin>
+                </plugins>
+            </frontController>
+            <modules/>
+            <layout>
+                <layout>layout</layout>
+                <layoutpath><zf:const zf:name="APPLICATION_PATH"/>/layouts</layoutpath>
+            </layout>
+            <view>
+                <helperPath>
+                    <Default_View_Helper><zf:const zf:name="APPLICATION_PATH"/>/modules/default/views/helpers</Default_View_Helper>
+                </helperPath>
+            </view>
+        </resources>
+        <local_config><zf:const zf:name="APPLICATION_PATH"/>/configs/local.xml</local_config>
+    </production>
+    <development zf:extends="production">
+        <phpSettings>
+            <display_startup_errors>1</display_startup_errors>
+            <display_errors>1</display_errors>
+        </phpSettings>
+        <resources>
+            <frontController>
+                <params>
+                    <displayExceptions>1</displayExceptions>
+                </params>
+            </frontController>
+        </resources>
+    </development>
+</zend-config>

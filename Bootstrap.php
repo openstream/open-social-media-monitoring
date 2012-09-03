@@ -17,7 +17,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
     {
         $local_config = $this->getOption('local_config');
         if (file_exists($local_config)) {
-            $config = new Zend_Config_Ini($local_config);
+            $config = new Zend_Config_Xml($local_config);
             $this->setOptions($config->toArray());
         }
     }

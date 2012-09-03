@@ -95,9 +95,12 @@ class Settings_IndexController extends Zend_Controller_Action
             /** @var $bootstrap Bootstrap */
             $bootstrap = $this->getInvokeArg('bootstrap');
             $options = new Zend_Config($options);
-            $writer = new Zend_Config_Writer_Ini();
-            $writer->setRenderWithoutSections()
-                ->write($bootstrap->getOption('local_config'), $options);
+            $writer = new Zend_Config_Writer_Xml();
+            $writer->write($bootstrap->getOption('local_config'), $options);
+
+            $options = $bootstrap->getOptions();
+            $options = new Zend_Config($options);
+            $writer->write('application.xml', $options);
 
             $this->_helper->redirector('index', 'index', 'default');
         }
