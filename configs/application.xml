@@ -20,7 +20,8 @@
             <frontController>
                 <moduleDirectory><zf:const zf:name="APPLICATION_PATH"/>/modules</moduleDirectory>
                 <plugins>
-                    <superduperplugin>Osmm_Controller_Plugin_Setup</superduperplugin>
+                    <osmm_setup>Osmm_Controller_Plugin_Setup</osmm_setup>
+                    <osmm_version>Osmm_Controller_Plugin_Version</osmm_version>
                 </plugins>
             </frontController>
             <modules/>
