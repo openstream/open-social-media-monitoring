@@ -1,7 +1,7 @@
 Installation:
 - Upload all files onto your server. You can upload them into either root, or subdirectory.
 - Open the script installed with your browser and follow web-based installation.
-- Create a new cron job. You have to schedule cron.php run with an interval you prefer. This script will grab new data from all sources available.
+- Create a new cron job. You have to schedule http://yourdomian.com/path_to_script/cron/ run with an interval you prefer. Please use `wget` command This script will grab new data from all sources available.
 
 
 Configuration:
