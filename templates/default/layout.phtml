@@ -2,18 +2,18 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>Open Social Media Monitoring</title>
-    <?php echo $this->headLink()->appendStylesheet($this->baseUrl('st.css')) ?>
-    <link rel="icon" href="<?php echo $this->baseUrl('images/favicon.ico') ?>" type="image/x-icon" />
-    <link rel="shortcut icon" href="<?php echo $this->baseUrl('images/favicon.ico') ?>" type="image/x-icon" />
+    <?php echo $this->headLink()->appendStylesheet($this->getTemplateUrl('st.css')) ?>
+    <link rel="icon" href="<?php echo $this->getTemplateUrl('images/favicon.ico') ?>" type="image/x-icon" />
+    <link rel="shortcut icon" href="<?php echo $this->getTemplateUrl('images/favicon.ico') ?>" type="image/x-icon" />
     <?php echo $this->headMeta()->appendHttpEquiv('Content-Type', 'text/html; charset=utf-8') ?>
     <?php echo $this->placeholder('head') ?>
 </head>
 <body>
 
 <table cellspacing=0 cellpadding=0 align=center>
-    <tr><td><img src="<?php echo $this->baseUrl('images/a01.gif') ?>" alt=""/><br/></td>
-        <td><img src="<?php echo $this->baseUrl('images/a02.gif') ?>" alt=""/><br/></td>
-        <td width=450 background="<?php echo $this->baseUrl('images/a03.gif') ?>" align="right" valign="top">
+    <tr><td><img src="<?php echo $this->getTemplateUrl('images/a01.gif') ?>" alt=""/><br/></td>
+        <td><img src="<?php echo $this->getTemplateUrl('images/a02.gif') ?>" alt=""/><br/></td>
+        <td width=450 background="<?php echo $this->getTemplateUrl('images/a03.gif') ?>" align="right" valign="top">
             <table cellspacing=0 cellpadding=0>
                 <tr><td colspan=8 height=22></td></tr>
                 <tr>
@@ -24,20 +24,20 @@
                 </tr>
             </table>
         </td>
-        <td><img src="<?php echo $this->baseUrl('images/a04.gif') ?>" alt=""/></td></tr>
+        <td><img src="<?php echo $this->getTemplateUrl('images/a04.gif') ?>" alt=""/></td></tr>
 </table>
 
 <table cellspacing=0 cellpadding=0 align=center>
-    <tr><td background="<?php echo $this->baseUrl('images/a10.gif') ?>">
+    <tr><td background="<?php echo $this->getTemplateUrl('images/a10.gif') ?>">
         <table cellspacing=0 cellpadding=0 align=center>
             <tr>
-                <td valign=top><img src="<?php echo $this->baseUrl('images/a08.gif') ?>" alt=""/></td>
+                <td valign=top><img src="<?php echo $this->getTemplateUrl('images/a08.gif') ?>" alt=""/></td>
                 <td width=650 bgcolor="#ffffff" class="m1">
 
                     <?php echo $this->layout()->content ?>
 
                 </td>
-                <td valign="top"><img src="<?php echo $this->baseUrl('images/a09.gif') ?>" alt=""/></td>
+                <td valign="top"><img src="<?php echo $this->getTemplateUrl('images/a09.gif') ?>" alt=""/></td>
             </tr>
         </table>
     </td></tr>

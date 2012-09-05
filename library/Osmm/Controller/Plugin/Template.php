@@ -5,8 +5,9 @@ class Osmm_Controller_Plugin_Template extends Zend_Controller_Plugin_Abstract
     public function routeShutdown($request)
     {
         $template = new stdClass;
+        // Hardcoded for now
         $template->foldername = 'default';
-        Zend_Registry::set('theme', $template);
+        Zend_Registry::set('template', $template);
 
         /** @var $bootstrap Bootstrap */
         $bootstrap = Zend_Controller_Front::getInstance()->getParam('bootstrap');
