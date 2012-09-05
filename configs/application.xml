@@ -22,12 +22,13 @@
                 <plugins>
                     <osmm_setup>Osmm_Controller_Plugin_Setup</osmm_setup>
                     <osmm_version>Osmm_Controller_Plugin_Version</osmm_version>
+                    <osmm_template>Osmm_Controller_Plugin_Template</osmm_template>
                 </plugins>
             </frontController>
             <modules/>
             <layout>
                 <layout>layout</layout>
-                <layoutpath><zf:const zf:name="APPLICATION_PATH"/>/layouts</layoutpath>
+                <layoutpath><zf:const zf:name="APPLICATION_PATH"/>/templates</layoutpath>
             </layout>
             <view>
                 <helperPath>
