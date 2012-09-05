@@ -32,7 +32,7 @@
             </layout>
             <view>
                 <helperPath>
-                    <Default_View_Helper><zf:const zf:name="APPLICATION_PATH"/>/modules/default/views/helpers</Default_View_Helper>
+                    <Osmm_View_Helper>Osmm/View/Helper</Osmm_View_Helper>
                 </helperPath>
             </view>
         </resources>
