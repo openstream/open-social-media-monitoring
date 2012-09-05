@@ -8,6 +8,6 @@ class Osmm_View_Helper_GetTemplateUrl extends Zend_View_Helper_BaseUrl
         if (null !== $url) {
             $url = ltrim($url, '/\\');
         }
-        return $this->getBaseUrl() . '/templates/' . $template->foldername . '/' . $url;
+        return $this->getBaseUrl() . '/templates/' . $template . '/' . $url;
     }
 }

@@ -4,25 +4,29 @@ class Osmm_Controller_Plugin_Template extends Zend_Controller_Plugin_Abstract
 {
     public function routeShutdown($request)
     {
-        $template = new stdClass;
         // Hardcoded for now
-        $template->foldername = 'default';
+        $template = 'default';
         Zend_Registry::set('template', $template);
 
         /** @var $bootstrap Bootstrap */
         $bootstrap = Zend_Controller_Front::getInstance()->getParam('bootstrap');
 
-        if ($bootstrap->hasResource('view')) {
-            /** @var $view Zend_View */
-// Not yet
-//            $view = $bootstrap->getResource('view');
-//            $view->setBasePath(APPLICATION_PATH . '/views/' . $template->foldername);
-        }
-
         if ($bootstrap->hasResource('layout')) {
             /** @var $layout Zend_Layout */
             $layout = $bootstrap->getResource('layout');
-            $layout->setLayoutPath(APPLICATION_PATH . '/templates/' . $template->foldername);
+            $layout->setLayoutPath(APPLICATION_PATH . '/templates/' . $template);
+        }
+    }
+
+    public function dispatchLoopStartup(Zend_Controller_Request_Abstract $request) {
+        $view = Zend_Controller_Action_HelperBroker::getExistingHelper('ViewRenderer')->view;
+        $scriptPath = sprintf('%s/templates/%s/%s',
+            APPLICATION_PATH,
+            Zend_Registry::get('template'),
+            $request->getModuleName()
+        );
+        if (file_exists($scriptPath)) {
+            $view->addScriptPath($scriptPath);
         }
     }
 }
