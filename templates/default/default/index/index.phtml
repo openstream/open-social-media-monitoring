@@ -1,5 +1,5 @@
 <table cellpadding="5" cellspacing="0" width="100%" class="t1t">
-<?php if (is_array($this->campaigns)) : ?>
+<?php if (is_object($this->campaigns)) : ?>
     <?php foreach ($this->campaigns as $campaign) : ?>
 
     <tr<?php echo $campaign->project_status ? '' : ' class="disabled"' ?>>
