@@ -1,5 +1,6 @@
 <table cellpadding="5" cellspacing="0" width="100%" class="t1t">
-<?php foreach ($this->campaigns as $campaign) : ?>
+<?php if (is_array($this->campaigns)) : ?>
+    <?php foreach ($this->campaigns as $campaign) : ?>
 
     <tr<?php echo $campaign->project_status ? '' : ' class="disabled"' ?>>
         <td class="rw">
@@ -17,7 +18,8 @@
         </td>
     </tr>
 
-<?php endforeach ?>
+    <?php endforeach ?>
+<?php endif ?>
 </table><br/>
 
 <input type="button" class="bu" value="Add Project" onclick="location.href = '<?php echo $this->getUrl('*/*/edit') ?>'"/>
