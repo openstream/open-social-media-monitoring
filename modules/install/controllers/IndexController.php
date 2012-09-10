@@ -12,8 +12,9 @@ class Install_IndexController extends Zend_Controller_Action
         $this->view->error = $defaultNamespace->error;
         unset($defaultNamespace->error);
 
-        $frontControllerDir = $this->getFrontController()->getControllerDirectory('settings');
-        $this->view->addBasePath(realpath($frontControllerDir . '/../views'));
+        $this->_helper->_layout->setLayout('blank');
+
+        $this->view->setScriptPath(APPLICATION_PATH . '/templates/' . Zend_Registry::get('template') . '/settings');
         $this->view->render('index/index.phtml');
     }
 
@@ -151,9 +152,8 @@ CREATE TABLE  IF NOT EXISTS '.$options['resources']['db']['params']['prefix'].'s
             unset($defaultNamespace->options);
             $bootstrap = $this->getInvokeArg('bootstrap');
             $options = new Zend_Config($options);
-            $writer = new Zend_Config_Writer_Ini();
-            $writer->setRenderWithoutSections()
-                ->write($bootstrap->getOption('local_config'), $options);
+            $writer = new Zend_Config_Writer_Xml();
+            $writer->write($bootstrap->getOption('local_config'), $options);
 
             $this->_helper->redirector('index', 'index', 'default');
         }
