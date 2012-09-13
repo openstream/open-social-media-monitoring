@@ -11,4 +11,20 @@
     <cron>
         <default>Default_Model_Cron</default>
     </cron>
+    <menu>
+        <campaigns>
+            <title>Campaigns</title>
+            <url/>
+            <child>
+                <all_campaigns>
+                    <title>Add Campaigns</title>
+                    <url/>
+                </all_campaigns>
+                <add_new>
+                    <title>Add New</title>
+                    <url>*/*/edit</url>
+                </add_new>
+            </child>
+        </campaigns>
+    </menu>
 </zend-config>

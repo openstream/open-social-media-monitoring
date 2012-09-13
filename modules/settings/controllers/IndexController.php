@@ -46,7 +46,8 @@ class Settings_IndexController extends Zend_Controller_Action
                     'dbname'    => $this->getRequest()->getParam('db_name'),
                     'prefix'    => $this->getRequest()->getParam('db_prefix')
                 )
-            ))
+            )),
+            'template' => $this->getRequest()->getParam('template')
         );
 
         $validator = new Zend_Validate_EmailAddress();
