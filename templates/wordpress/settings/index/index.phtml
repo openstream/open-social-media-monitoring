@@ -1,0 +1,66 @@
+<div id="icon-options-general" class="icon32"><br/></div>
+<h2>Settings</h2>
+
+
+<form method=post action="<?php echo $this->getUrl('*/*/process') ?>">
+
+    <?php if (count($this->error)) : ?>
+        <div class="error">
+            Please correct following errors:
+            <ul>
+                <li><?php echo implode('</li><li>', $this->error); ?></li>
+            </ul>
+        </div>
+    <?php endif; ?>
+
+    <table class="form-table">
+        <tbody>
+        <tr valign="top"<?php echo is_array($this->error) && isset($this->error['admin_email']) ? ' class="error"' : '' ?>>
+            <th><label for="admin_email">Administrator E-Mail:</label></th>
+            <td><input type="text" name="admin_email" id="admin_email" class="regular-text" value="<?php echo $this->options['authentication']['email'] ?>"/></td>
+        </tr>
+        <tr valign="top"<?php echo is_array($this->error) && isset($this->error['admin_password']) ? ' class="error"' : '' ?>>
+            <th><label for="admin_password">Administator Password:</label></th>
+            <td><input type="password" name="admin_password" id="admin_password" class="regular-text" value="<?php echo $this->options['authentication']['password'] ?>"/></td>
+        </tr>
+        <tr valign="top"<?php echo is_array($this->error) && isset($this->error['default_from']) ? ' class="error"' : '' ?>>
+            <th><label for="default_from">Default From Address:</label></th>
+            <td><input type="text" name="default_from" id="default_from" class="regular-text" value="<?php echo $this->options['settings']['default_from'] ?>"/></td>
+        </tr>
+        <tr valign="top"<?php echo is_array($this->error) && isset($this->error['db_host']) ? ' class="error"' : '' ?>>
+            <th><label for="db_host">Database Host:</label></th>
+            <td><input type="text" name="db_host" id="db_host" value="<?php echo $this->options['resources']['db']['params']['host'] ?>" class="regular-text"/></td>
+        </tr>
+        <tr valign="top"<?php echo is_array($this->error) && isset($this->error['db_user']) ? ' class="error"' : '' ?>>
+            <th><label for="db_user">Database User Name:</label></th>
+            <td><input type="text" name="db_user" id="db_user" value="<?php echo $this->options['resources']['db']['params']['username'] ?>" class="regular-text"/></td>
+        </tr>
+        <tr valign="top">
+            <th><label for="db_password">Database User Password:</label></th>
+            <td><input type="password" name="db_password" id="db_password" value="<?php echo $this->options['resources']['db']['params']['password'] ?>" class="regular-text"/></td>
+        </tr>
+        <tr valign="top"<?php echo is_array($this->error) && isset($this->error['db_name']) ? ' class="error"' : '' ?>>
+            <th><label for="db_name">Database Name:</label></th>
+            <td><input type="text" name="db_name" id="db_name" value="<?php echo $this->options['resources']['db']['params']['dbname'] ?>" class="regular-text"/></td>
+        </tr>
+        <tr valign="top">
+            <th><label for="db_prefix">Database Table Prefix:</label></th>
+            <td><input type="text" name="db_prefix" id="db_prefix" value="<?php echo $this->options['resources']['db']['params']['prefix'] ?>" class="regular-text"/></td>
+        </tr>
+        <tr valign="top"<?php echo is_array($this->error) && isset($this->error['keep_history']) ? ' class="error"' : '' ?>>
+            <th><label for="keep_history">Show timeline for last:</label></th>
+            <td><input type="text" name="keep_history" id="keep_history" value="<?php echo $this->options['settings']['keep_history'] ?>" size="3"/> days</td>
+        </tr>
+        <tr valign="top">
+            <th><label for="alchemy_api_key">Alchemy API Key (<a href="http://www.alchemyapi.com/api/register.html" target="_blank">Get It Here</a>):</label></th>
+            <td><input type="text" name="alchemy_api_key" id="alchemy_api_key" value="<?php echo $this->options['settings']['alchemy_api_key'] ?>" class="regular-text"/></td>
+        </tr>
+        <tr valign="top">
+            <th><label for="template">Template:</label></th>
+            <td><input type="text" name="template" id="template" value="<?php echo $this->options['template'] ?>" class="regular-text"/></td>
+        </tr>
+        </tbody>
+    </table>
+    <p class="submit"><input type="submit" value="Save Settings" class="button-primary"/></p>
+
+</form>

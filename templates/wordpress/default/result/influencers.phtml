@@ -1,0 +1,12 @@
+<?php $this->placeholder('influencers')->captureStart() ?>
+
+<?php if (count($this->influencers)) : ?>
+    <h3>Top Influencers</h3>
+    <?php foreach ($this->influencers as $influencer) : ?>
+        <div class="left user"><a href="<?php echo $influencer['search_author_uri'] ?>" target="_blank"><?php echo $influencer['search_author_name'] ?></a></div>
+        <div class="right"><?php echo $influencer['cnt'] ?> mention<?php echo $influencer['cnt'] > 1 ? 's' : '' ?></div>
+        <div class="clear"></div>
+    <?php endforeach; ?>
+<?php endif; ?>
+
+<?php $this->placeholder('influencers')->captureEnd() ?>

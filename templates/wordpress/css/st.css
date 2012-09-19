@@ -1,0 +1,67 @@
+/*
+ Open Social Media Monitoring
+ http://www.open-social-media-monitoring.net
+
+ Copyright (c) 2012 Openstream Internet Solutions
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License v3 (2007)
+ as published by the Free Software Foundation.
+*/
+
+.error, .error label { color:#FF0000 }
+.error input { border-color: #FF0000 }
+pre.error { width: 650px; overflow-x: scroll; color:#666666; }
+
+.left { float:left; }
+.right { float:right; }
+
+.results-container{ border-bottom:#bbbbbb solid 1px; padding-top:3px; padding-bottom:6px; }
+.results-container img{ height:48px; width:48px; margin-right:10px; margin-top:3px; }
+.results-container .date{ color:#bbbbbb; font-size:10px; }
+.results-container.facebook{ background-color:#2e4576; border-bottom-color:#2e4576; color:#ffffff; }
+.results-container .msg-text{ width:577px; }
+
+/* -- carousel --*/
+.jcarousel-skin-tango .jcarousel-container {}
+.jcarousel-skin-tango .jcarousel-container-vertical { width: 650px; height: 630px; padding: 40px 0; }
+.jcarousel-skin-tango .jcarousel-clip { overflow: hidden; }
+.jcarousel-skin-tango .jcarousel-clip-vertical { width: 650px; height: 630px; }
+.jcarousel-skin-tango .jcarousel-item { width: 650px; height: 63px; overflow:hidden; }
+.jcarousel-skin-tango .jcarousel-item-vertical {}
+.jcarousel-skin-tango .jcarousel-item-placeholder { background: #FFFFFF; }
+.jcarousel-skin-tango .jcarousel-next-vertical { position: absolute; bottom: 5px; left: 305px; width: 32px; height: 32px; cursor: pointer; background: transparent url(../images/next-vertical.png) no-repeat 0 0; }
+.jcarousel-skin-tango .jcarousel-next-vertical:hover, .jcarousel-skin-tango .jcarousel-next-vertical:focus { background-position: 0 -32px; }
+.jcarousel-skin-tango .jcarousel-next-vertical:active { background-position: 0 -64px; }
+.jcarousel-skin-tango .jcarousel-next-disabled-vertical,
+.jcarousel-skin-tango .jcarousel-next-disabled-vertical:hover,
+.jcarousel-skin-tango .jcarousel-next-disabled-vertical:focus,
+.jcarousel-skin-tango .jcarousel-next-disabled-vertical:active { cursor: default; background-position: 0 -96px; }
+.jcarousel-skin-tango .jcarousel-prev-vertical { position: absolute; top: 5px; left: 305px; width: 32px; height: 32px; cursor: pointer; background: transparent url(../images/prev-vertical.png) no-repeat 0 0; }
+.jcarousel-skin-tango .jcarousel-prev-vertical:hover, .jcarousel-skin-tango .jcarousel-prev-vertical:focus { background-position: 0 -32px; }
+.jcarousel-skin-tango .jcarousel-prev-vertical:active { background-position: 0 -64px; }
+.jcarousel-skin-tango .jcarousel-prev-disabled-vertical,
+.jcarousel-skin-tango .jcarousel-prev-disabled-vertical:hover,
+.jcarousel-skin-tango .jcarousel-prev-disabled-vertical:focus,
+.jcarousel-skin-tango .jcarousel-prev-disabled-vertical:active { cursor: default; background-position: 0 -96px; }
+
+#message-container { position:absolute; }
+.popup { display:none; position:relative; z-index:50; top:4px; left:-150px; }
+.popup td.corner { height:15px; width:19px; background-repeat:no-repeat; }
+.popup td#topleft { background-image: url(../images/bubble-1.png); }
+.popup td.top { background-image: url(../images/bubble-2.png); }
+.popup td#topright { background-image: url(../images/bubble-3.png); }
+.popup td.bg-left { background-image: url(../images/bubble-4.png); }
+.popup td.bg-right { background: url(../images/bubble-5.png) repeat-y; padding-left:1px; }
+.popup td#bottomleft { background-image: url(../images/bubble-6.png); }
+.popup td.bottom { background-image: url(../images/bubble-7.png); text-align: center;}
+.popup td.bottom img { display: block; margin: 0 auto; }
+.popup td#bottomright { background-image: url(../images/bubble-8.png); }
+.popup td.popup-contents { font-size: 12px; line-height: 1.2em; background-color: #fff; color:#333333; }
+.popup p.hide-note{ font-size:11px; color:#bbbbbb; }
+
+.user{ background:url(../images/icon-user.png) no-repeat 0 1px; padding: 0 0 2px 15px; }
+h3{ margin-top:20px; margin-bottom:10px; font-weight:normal; font-size:16px; }
+
+.installer{ background-color:#FFFFFF; margin-top:100px; }
+.disabled a { color:#666666 }

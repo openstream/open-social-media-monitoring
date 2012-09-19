@@ -1,0 +1,72 @@
+<?php echo $this->doctype() ?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Open Social Media Monitoring</title>
+    <?php echo $this->headLink()->appendStylesheet($this->getTemplateUrl('css/st.css')) ?>
+    <?php echo $this->headLink()->appendStylesheet($this->getTemplateUrl('css/colors-fresh.css')) ?>
+    <?php echo $this->headLink()->appendStylesheet($this->getTemplateUrl('css/load-styles.css')) ?>
+    <link rel="icon" href="<?php echo $this->getTemplateUrl('images/favicon.ico') ?>" type="image/x-icon" />
+    <link rel="shortcut icon" href="<?php echo $this->getTemplateUrl('images/favicon.ico') ?>" type="image/x-icon" />
+    <?php echo $this->headMeta()->appendHttpEquiv('Content-Type', 'text/html; charset=utf-8') ?>
+    <?php echo $this->placeholder('head') ?>
+</head>
+<body>
+<div id="wpwrap">
+    <div id="adminmenuback"></div>
+    <div id="adminmenuwrap">
+        <div id="adminmenushadow"></div>
+        <ul id="adminmenu">
+            <?php while (list($module_name, $menu_item) = each($this->menu)) : ?>
+                <?php
+
+                $class = 'menu-top menu-icon-' . $module_name;
+                if ($menu_item['child']) {
+                    $class .= ' wp-has-submenu';
+                }
+                if($menu_item['active']) {
+                    if (is_array($menu_item['child'])) {
+                        $class .= ' wp-has-current-submenu wp-menu-open';
+                    } else {
+                        $class .= ' current';
+                    }
+                } else {
+                    $class .= ' wp-not-current-submenu';
+                }
+
+                ?>
+                <li class="<?php echo $class ?>">
+                    <div class="wp-menu-image"><a href="<?php echo $this->getUrl($menu_item['url']) ?>"><br></a></div>
+                    <div class="wp-menu-arrow"><div></div></div>
+                    <a href="<?php echo $this->getUrl($menu_item['url']) ?>" class="<?php echo $class ?>"><?php echo $menu_item['title'] ?></a>
+                    <?php if ($menu_item['child']) : ?>
+
+                    <div class="wp-submenu">
+                        <div class="wp-submenu-wrap">
+                            <ul>
+                                <?php foreach($menu_item['child'] as $child) : ?>
+                                    <li><a href="<?php echo $this->getUrl($child['url']) ?>"><?php echo $child['title'] ?></a></li>
+                                <?php endforeach ?>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <?php endif ?>
+                </li>
+            <?php endwhile; ?>
+        </ul>
+    </div>
+    <div id="wpcontent">
+        <div id="wpbody">
+            <div id="wpbody-content">
+                <div class="wrap"><?php echo $this->layout()->content ?></div>
+            </div>
+        </div>
+    </div>
+    <div id="footer">
+        <p id="footer-left" class="alignleft"><span id="footer-thankyou">Copyright &copy; <?php echo date('Y') ?> Open Social Media Monitoring</span></p>
+        <p id="footer-upgrade" class="alignright">Version <?php echo $this->version ?></p>
+        <div class="clear"></div>
+    </div>
+</div>
+</body>
+</html>
