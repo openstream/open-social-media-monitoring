@@ -1,25 +1,39 @@
-<table cellpadding="5" cellspacing="0" width="100%" class="t1t">
-<?php if (is_object($this->campaigns)) : ?>
-    <?php foreach ($this->campaigns as $campaign) : ?>
+<div id="icon-options-general" class="icon32"><br/></div>
+<h2>Campaigns</h2><p>
 
-    <tr<?php echo $campaign->project_status ? '' : ' class="disabled"' ?>>
-        <td class="rw">
-            <h4><a href="<?php echo $this->getUrl('*/*/results/campaign/' . $campaign->project_id) ?>"><?php echo $campaign->project_name ?></a></h4>
-            Weekly mentions: <?php echo $this->additional_data[$campaign->project_id]['weekly'] ?> |
-            Daily Mentions: <?php echo $this->additional_data[$campaign->project_id]['daily'] ?><br />
-            Keywords: <?php echo $this->additional_data[$campaign->project_id]['keywords'] ?>
-        </td>
-        <td class="rw" style="padding-right:25px;" align="right">
+<table cellpadding=0 cellspacing=0 width=60% class=t1>
+    
+    <th align="left"><strong>Project: </strong></th>
+    <th align="left"><strong>Weekly Mentions: </strong></th>
+    <th align="left"><strong>Daily Mentions: </strong></th>
+    <th align="left"><strong>Keywords:</strong></th>
+    </tr>
+    
+        <?php if (is_object($this->campaigns)) : ?>
+        <?php foreach ($this->campaigns as $campaign) : ?>
+        <?php echo $campaign->project_status ? '' : ' class="disabled"' ?>
+    
+    <tr>
+    <td><strong><a href="<?php echo $this->getUrl('*/result/campaign/id/' . $campaign->project_id) ?>"><?php echo $campaign->project_name ?></a></strong></td>
+    <td><?php echo $this->additional_data[$campaign->project_id]['weekly'] ?> 
+    <td><?php echo $this->additional_data[$campaign->project_id]['daily'] ?> 
+    <td align="left"><?php echo $this->additional_data[$campaign->project_id]['keywords'] ?>
+    
+    </tr>   
+
+    <td class="rw" style="padding-right:25px;" align="left"> 
 		    <a href="<?php echo $this->getUrl('*/result/campaign/id/' . $campaign->project_id) ?>">results</a> -
             <a href="<?php echo $this->getUrl('*/keyword/index/campaign/' . $campaign->project_id) ?>">keywords</a> -
             <a href="<?php echo $this->getUrl('*/*/edit/campaign/' . $campaign->project_id) ?>">edit</a> -
             <a href="<?php echo $this->getUrl('*/*/status/campaign/' . $campaign->project_id) ?>"><?php echo $campaign->project_status ? 'disable' : 'enable' ?></a> -
-            <a href="<?php echo $this->getUrl('*/*/delete/campaign/' . $campaign->project_id) ?>" onclick="return confirm('Are you sure? All keyword(s) data will be wiped out.');">delete</a>
+            <a href="<?php echo $this->getUrl('*/*/delete/campaign/' . $campaign->project_id) ?>" onclick="return confirm('Are you certain? All stored keyword data will be irrevocably wiped out.');">delete</a>
+        <p>
         </td>
     </tr>
-
+            
+            
+        
     <?php endforeach ?>
 <?php endif ?>
-</table><br/>
-
-<input type="button" class="bu" value="Add Project" onclick="location.href = '<?php echo $this->getUrl('*/*/edit') ?>'"/>
+<th></table>
+<p class="submit"><input type="submit" value="Add Project" class="button-primary" onclick="location.href = '<?php echo $this ->getUrl('*/*/edit/' . $this->campaign_id) ?>'"/></DIV>
