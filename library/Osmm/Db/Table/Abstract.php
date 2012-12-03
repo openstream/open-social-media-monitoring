@@ -3,6 +3,7 @@
 class Osmm_Db_Table_Abstract extends Zend_Db_Table_Abstract
 {
     private $_tables, $_prefix;
+    protected $_name;
 
     public function __construct($config = array()){
         $this->_name = $this->getTableName($this->_name);

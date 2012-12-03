@@ -10,7 +10,7 @@ class Default_Model_DbTable_Search extends Osmm_Db_Table_Abstract
         if (!$this->_graph_data) {
             $select = $this->_db->select();
             $select->from(array('s' => $this->_name), array('search_source', 'search_published', 'query_id'))
-                ->where('s.query_id IN (?)', $query_ids)
+                ->where('s.query_id IN (?)', explode(', ', $query_ids))
                 ->group('s.search_id');
             $res = $select->query();
             $this->_graph_data = $res->fetchAll();

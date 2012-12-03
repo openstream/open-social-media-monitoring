@@ -1,3 +1,28 @@
+<?php
+
+// TODO: Convert the following function into a block method
+
+if (!function_exists('_getOption')) {
+    function _getOption($object, $path)
+    {
+        $path = explode('/', $path);
+        if (isset($object->options)) {
+            $object = $object->options;
+            foreach($path as $chunk) {
+                if (isset($object[$chunk])) {
+                    $object = $object[$chunk];
+                } else {
+                    return '';
+                }
+            }
+            return $object;
+        }
+        return '';
+    }
+}
+
+?>
+
 <form method=post action="<?php echo $this->getUrl('*/*/process') ?>">
 
     <?php if (count($this->error)) : ?>
@@ -12,47 +37,47 @@
     <table width="632" cellpadding="2" cellspacing="2">
         <tr<?php echo is_array($this->error) && isset($this->error['admin_email']) ? ' class="error"' : '' ?>>
             <td align="right"><label for="admin_email">Administrator E-Mail:</label></td>
-            <td><input name="admin_email" id="admin_email" size="50" value="<?php echo $this->options['authentication']['email'] ?>"/></td>
+            <td><input name="admin_email" id="admin_email" size="50" value="<?php echo _getOption($this, 'authentication/email') ?>"/></td>
         </tr>
         <tr<?php echo is_array($this->error) && isset($this->error['admin_password']) ? ' class="error"' : '' ?>>
             <td align="right"><label for="admin_password">Administator Password:</label></td>
-            <td><input type="password" name="admin_password" id="admin_password" size="50" value="<?php echo $this->options['authentication']['password'] ?>"/></td>
+            <td><input type="password" name="admin_password" id="admin_password" size="50" value="<?php echo _getOption($this, 'authentication/password') ?>"/></td>
         </tr>
         <tr<?php echo is_array($this->error) && isset($this->error['default_from']) ? ' class="error"' : '' ?>>
             <td align="right"><label for="default_from">Default From Address:</label></td>
-            <td><input name="default_from" id="default_from" size="50" value="<?php echo $this->options['settings']['default_from'] ?>"/></td>
+            <td><input name="default_from" id="default_from" size="50" value="<?php echo _getOption($this, 'settings/default_from') ?>"/></td>
         </tr>
         <tr<?php echo is_array($this->error) && isset($this->error['db_host']) ? ' class="error"' : '' ?>>
             <td align="right"><label for="db_host">Database Host:</label></td>
-            <td><input name="db_host" id="db_host" value="<?php echo $this->options['resources']['db']['params']['host'] ?>" size="50"/></td>
+            <td><input name="db_host" id="db_host" value="<?php echo _getOption($this, 'resources/db/params/host') ?>" size="50"/></td>
         </tr>
         <tr<?php echo is_array($this->error) && isset($this->error['db_user']) ? ' class="error"' : '' ?>>
             <td align="right"><label for="db_user">Database User Name:</label></td>
-            <td><input name="db_user" id="db_user" value="<?php echo $this->options['resources']['db']['params']['username'] ?>" size="50"/></td>
+            <td><input name="db_user" id="db_user" value="<?php echo _getOption($this, 'resources/db/params/username') ?>" size="50"/></td>
         </tr>
         <tr>
             <td align="right"><label for="db_password">Database User Password:</label></td>
-            <td><input type="password" name="db_password" id="db_password" value="<?php echo $this->options['resources']['db']['params']['password'] ?>" size="50"/></td>
+            <td><input type="password" name="db_password" id="db_password" value="<?php echo _getOption($this, 'resources/db/params/password') ?>" size="50"/></td>
         </tr>
         <tr<?php echo is_array($this->error) && isset($this->error['db_name']) ? ' class="error"' : '' ?>>
             <td align="right"><label for="db_name">Database Name:</label></td>
-            <td><input name="db_name" id="db_name" value="<?php echo $this->options['resources']['db']['params']['dbname'] ?>" size="50"/></td>
+            <td><input name="db_name" id="db_name" value="<?php echo _getOption($this, 'resources/db/params/dbname') ?>" size="50"/></td>
         </tr>
         <tr>
             <td align="right"><label for="db_prefix">Database Table Prefix:</label></td>
-            <td><input name="db_prefix" id="db_prefix" value="<?php echo $this->options['resources']['db']['params']['prefix'] ?>" size="50"/></td>
+            <td><input name="db_prefix" id="db_prefix" value="<?php echo _getOption($this, 'resources/db/params/prefix') ?>" size="50"/></td>
         </tr>
         <tr<?php echo is_array($this->error) && isset($this->error['keep_history']) ? ' class="error"' : '' ?>>
             <td align="right"><label for="keep_history">Show timeline for last:</label></td>
-            <td><input type="text" name="keep_history" id="keep_history" value="<?php echo $this->options['settings']['keep_history'] ?>" size="3"/> days</td>
+            <td><input type="text" name="keep_history" id="keep_history" value="<?php echo _getOption($this, 'settings/keep_history') ?>" size="3"/> days</td>
         </tr>
         <tr>
             <td align="right"><label for="alchemy_api_key">Alchemy API Key (<a href="http://www.alchemyapi.com/api/register.html" target="_blank">Get It Here</a>):</label></td>
-            <td><input type="text" name="alchemy_api_key" id="alchemy_api_key" value="<?php echo $this->options['settings']['alchemy_api_key'] ?>" size="50"/></td>
+            <td><input type="text" name="alchemy_api_key" id="alchemy_api_key" value="<?php echo _getOption($this, 'settings/alchemy_api_key') ?>" size="50"/></td>
         </tr>
         <tr>
             <td align="right"><label for="template">Template:</label></td>
-            <td><input type="text" name="template" id="template" value="<?php echo $this->options['template'] ?>" size="50"/></td>
+            <td><input type="text" name="template" id="template" value="<?php echo _getOption($this, 'template') ?>" size="50"/></td>
         </tr>
         <tr>
             <td></td>

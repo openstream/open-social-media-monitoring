@@ -28,7 +28,9 @@ class IndexController extends Zend_Controller_Action
             $model = new Default_Model_DbTable_Campaigns();
             $this->view->campaign = $model->fetchRow(array('project_id = ?' => $this->getRequest()->getParam('campaign')));
         } else {
-            $this->view->campaign = array();
+            $this->view->campaign = new ArrayObject();
+            $this->view->campaign->project_id = 0;
+            $this->view->campaign->project_name = '';
         }
     }
 

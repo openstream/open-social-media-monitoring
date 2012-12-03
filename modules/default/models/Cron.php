@@ -75,7 +75,14 @@ class Default_Model_Cron
             $alchemy_base_url = 'http://access.alchemyapi.com/calls/text/TextGetLanguage';
             $lang = array();
             while (is_object($response) && isset($response->data) && is_array($response->data) && list(,$entry) = each($response->data)) {
-                $text = $entry->message ? $entry->message : $entry->story;
+                $entry->name = isset($entry->name) ? $entry->name : '';
+                if (isset($entry->message) && $entry->message) {
+                    $text = $entry->message;
+                } elseif (isset($entry->story) && $entry->story) {
+                    $text = $entry->story;
+                } else {
+                    $text = '';
+                }
                 if($obj['query_lang'] && $settings['alchemy_api_key']){
                     $parameters = array(
                         'apikey'        => $settings['alchemy_api_key'],

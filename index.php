@@ -1,5 +1,6 @@
 <?php
 
+date_default_timezone_set('Europe/Berlin');
 defined('BASE_PATH') || define('BASE_PATH', realpath(dirname(__FILE__)));
 defined('APPLICATION_PATH') || define('APPLICATION_PATH', BASE_PATH );
 defined('APPLICATION_ENV') || define('APPLICATION_ENV', (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'development'));

@@ -20,11 +20,11 @@
                 <?php
 
                 $class = 'menu-top menu-icon-' . $module_name;
-                if ($menu_item['child']) {
+                if (isset($menu_item['child']) && $menu_item['child']) {
                     $class .= ' wp-has-submenu';
                 }
-                if($menu_item['active']) {
-                    if (is_array($menu_item['child'])) {
+                if(isset($menu_item['active']) && $menu_item['active']) {
+                    if (isset($menu_item['child']) && is_array($menu_item['child'])) {
                         $class .= ' wp-has-current-submenu wp-menu-open';
                     } else {
                         $class .= ' current';
@@ -38,7 +38,7 @@
                     <div class="wp-menu-image"><a href="<?php echo $this->getUrl($menu_item['url']) ?>"><br></a></div>
                     <div class="wp-menu-arrow"><div></div></div>
                     <a href="<?php echo $this->getUrl($menu_item['url']) ?>" class="<?php echo $class ?>"><?php echo $menu_item['title'] ?></a>
-                    <?php if ($menu_item['child']) : ?>
+                    <?php if (isset($menu_item['child']) && $menu_item['child']) : ?>
 
                     <div class="wp-submenu">
                         <div class="wp-submenu-wrap">
@@ -60,6 +60,7 @@
             <div id="wpbody-content">
                 <div class="wrap"><?php echo $this->layout()->content ?></div>
             </div>
+            <div class="clear"></div>
         </div>
     </div>
     <div id="footer">

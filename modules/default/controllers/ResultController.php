@@ -99,14 +99,24 @@ class ResultController extends Zend_Controller_Action
         foreach ($search->getGraphInfo($query_ids) as $obj) {
             $darr = getdate($obj['search_published']);
             $date = mktime(0, 0, 0, $darr['mon'], $darr['mday'], $darr['year']);
-            $results['cnt'][$type == 'keyword' ? $obj['search_source'] : $obj['query_id']][$date]++;
+            $campaign = $type == 'keyword' ? $obj['search_source'] : $obj['query_id'];
+            if (isset($results['cnt'][$campaign][$date])) {
+                $results['cnt'][$campaign][$date]++;
+            } else {
+                $results['cnt'][$campaign][$date] = 1;
+            }
             $results['min'] = $results['min'] && $results['min'] < $date ? $results['min'] : $date;
             $results['max'] = $results['max'] && $results['max'] > $date ? $results['max'] : $date;
         }
 
         $search_index = new Default_Model_DbTable_SearchIndex();
         foreach ($search_index->getGraphInfo($query_ids) as $obj) {
-            $results['cnt'][$type == 'keyword' ? $obj['index_source'] : $obj['query_id']][$obj['index_date']] += $obj['index_count'];
+            $campaign = $type == 'keyword' ? $obj['index_source'] : $obj['query_id'];
+            if (isset($results['cnt'][$campaign][$obj['index_date']])) {
+                $results['cnt'][$campaign][$obj['index_date']] += $obj['index_count'];
+            } else {
+                $results['cnt'][$campaign][$obj['index_date']] = $obj['index_count'];
+            }
             $results['min'] = $results['min'] && $results['min'] < $obj['index_date'] ? $results['min'] : $obj['index_date'];
             $results['max'] = $results['max'] && $results['max'] > $obj['index_date'] ? $results['max'] : $obj['index_date'];
         }

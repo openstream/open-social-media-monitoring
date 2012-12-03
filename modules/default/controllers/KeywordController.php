@@ -27,7 +27,12 @@ class KeywordController extends Zend_Controller_Action
             $model = new Default_Model_DbTable_Keyword();
             $this->view->keyword = $model->fetchRow(array('query_id = ?' => $this->getRequest()->getParam('id')));
         } else {
-            $this->view->keyword = array();
+            $this->view->keyword = new ArrayObject();
+            $this->view->keyword->query_id = '';
+            $this->view->keyword->query_q = '';
+            $this->view->keyword->query_nearplace = '';
+            $this->view->keyword->query_distance = '';
+            $this->view->keyword->query_distanceunit = '';
         }
 
         $this->view->country_options = '<option value="">none</option>';
@@ -36,7 +41,7 @@ class KeywordController extends Zend_Controller_Action
         asort($countries, SORT_LOCALE_STRING);
         while (list($iso, $name) = each($countries)) {
             $iso = strtolower($iso);
-            $this->view->country_options .= '<option value="' . $iso . '"' . ($iso == $this->view->keyword['query_lang'] ? ' selected' : '').'>'.$name.'</option>';
+            $this->view->country_options .= '<option value="' . $iso . '"' . (isset($this->view->keyword['query_lang']) && $iso == $this->view->keyword['query_lang'] ? ' selected' : '').'>'.$name.'</option>';
         }
     }
 

@@ -7,13 +7,13 @@ class Osmm_View_Helper_GetUrl extends Zend_View_Helper_BaseUrl
         $route = explode('/', $route);
         $route = array_filter($route);
         $request = Zend_Controller_Front::getInstance()->getRequest();
-        if ($route[0] == '*') {
+        if (isset($route[0]) && $route[0] == '*') {
             $route[0] = $request->getModuleName();
         }
-        if ($route[1] == '*') {
+        if (isset($route[1]) && $route[1] == '*') {
             $route[1] = $request->getControllerName();
         }
-        if ($route[2] == '*') {
+        if (isset($route[2]) && $route[2] == '*') {
             $route[2] = $request->getActionName();
         }
         $url = implode('/', $route) . '/';
